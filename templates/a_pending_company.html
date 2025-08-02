@@ -13,8 +13,11 @@
         <p>.company gst no.:- {{ company.gst }}</p>
         <p>.company registration date :- {{ company.company_registration_date}}</p>
         <p>.company apply date in portal:- {{ company.registration_date}}</p>
-        <a href="###"><button>Aprove</button></a>
-        <a href="###"><button>Reject</button></a>
+        <form method="POST" action="{{ url_for('a_aprove_company') }}">
+        <input type="hidden" name="company_id" value="{{ company.id }}">
+        <button onclick="return confirm('Are you sure you want to Aprove this company')" name="action" value="aprove">Aprove</button>
+        <button onclick="return confirm('Are you sure you want to Reject this company')" name="action" value="reject">Reject</button>
+        </form>
     {% endfor %}
 </body>
 </html>

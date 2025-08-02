@@ -14,8 +14,11 @@
         <p>.company gst no.:- {{ company.gst }}</p>
         <p>.company registration date :- {{ company.company_registration_date}}</p>
         <p>.company registration date on portal:- {{ company.registration_date}}</p>
-        <a href="###"><button>Edit</button></a>
-        <a href="###"><button>Delete</button></a>
+        <form method="POST" action="{{ url_for('a_b_unb_company') }}">
+        <input type="hidden" name="company_id" value="{{ company.id }}">
+        <button onclick="return confirm('Are you sure you want to Block this company')" name="action" value="Block">Block</button>
+        <button onclick="return confirm('Are you sure you want to Unblock this company')" name="action" value="Unblock">Unblock</button>
+        </form>
     <p>----------    ##    ----------</p>
     {% endfor %}
 </body>

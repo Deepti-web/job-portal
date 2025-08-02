@@ -138,9 +138,9 @@ def set_password_c():
             cur = mysql.connection.cursor()
             data_company = session['temp_company']
             cur.execute("INSERT INTO companies (name, email, password, mobile, industry_type, company_type, company_website, adress, contact_persion_name," \
-                        "contact_persion_position, gst, company_registration_date, registration_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                        "contact_persion_position, gst, company_registration_date, registration_date, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                         (data_company['name'], data_company['email'], pwd,  data_company['mobile'], data_company['industry_type'], data_company['company_type'], data_company['company_website'], data_company['adress'],
-                        data_company['contact_persion_name'], data_company['contact_persion_position'], data_company['gst'], data_company['company_registration_date'], current_date))
+                        data_company['contact_persion_name'], data_company['contact_persion_position'], data_company['gst'], data_company['company_registration_date'], current_date, "pending"))
             mysql.connection.commit()
             session.pop('temp_company')
             return redirect('/success')
@@ -1217,7 +1217,78 @@ def a_status_emp():
     cur.execute("UPDATE employees SET status=%s WHERE id=%s", (new_status, emp_id))
     mysql.connection.commit()
     cur.close()
-    return redirect("/2300/admin_dashboard/seeker")  # Adjust to the correct route name
+    return redirect("/2300/admin_dashboard/seeker")
+
+@app.route("/admin_dashboardadmin_dashboard/companyes/status",methods=["POST"])
+def a_aprove_company():
+    if "a_id" not in session:
+        return redirect("/")
+    company_id = request.form.get("company_id")
+    action = request.form.get("action")
+    if not company_id or not action:
+        return "Invalid form submission", 400
+    if action == "aprove":
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE companies SET status = %s WHERE id=%s",("Aproved", company_id))
+        mysql.connection.commit()
+        cur.execute("SELECT email FROM companies WHERE id=%s",(company_id,))
+        r_email = cur.fetchone()
+        receiver_email = r_email["email"]
+        subject = "Notice!"
+        body = f"""<html>
+                    <body>
+                    <p style="color: #000000; font-size: 20px;">Hello,</p>
+                    <p style="color: #000000; font-size: 15px;">This is a Notice from jobportal</p>
+                    <p style="color: #000000; font-size: 15px;">your Accont is now Activate</p><br>
+                    <p style="color: #000000; font-size: 23px;"><b>Thank you<b></p><br>
+                    </body>
+                    </html>
+                """
+        send_email(subject, body, receiver_email)
+        cur.close()
+    if action == "reject":
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE companies SET status = %s WHERE id=%s",("Rejected ",company_id))
+        mysql.connection.commit()
+        cur.execute("SELECT email FROM companies WHERE id=%s",(company_id,))
+        r_email = cur.fetchone()
+        receiver_email = r_email["email"]
+        subject = "Notice!"
+        body = f"""<html>
+                    <body>
+                    <p style="color: #000000; font-size: 20px;">Hello,</p>
+                    <p style="color: #000000; font-size: 15px;">This is a Notice from jobportal</p>
+                    <p style="color: #000000; font-size: 15px;">your Accont is Rejected due to some wrong information</p><br>
+                    <p style="color: #000000; font-size: 15px;">You can Reapply</p><br>
+                    <p style="color: #000000; font-size: 23px;"><b>Thank you<b></p><br>
+                    </body>
+                    </html>
+                """
+        send_email(subject, body, receiver_email)
+        cur.execute("DELETE FROM companies WHERE id=%s",(company_id,))
+        mysql.connection.commit()
+        cur.close()
+    return redirect("/2300/admin_dashboard/new_company")
+
+@app.route("/admin_dashboard/companyes/status", methods=["POST"])
+def a_b_unb_company():
+    if "a_id" not in session:
+        return redirect("/")
+    company_id = request.form.get("company_id")
+    action = request.form.get("action")
+    if not company_id or not action:
+        return "Invalid form submission", 400
+    if action == "Block":
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE companies SET status = %s WHERE id=%s",("Block",company_id))
+        mysql.connection.commit()
+        cur.close()
+    if action == "Unblock":
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE companies SET status = %s WHERE id=%s",("Unblocked",company_id))
+        mysql.connection.commit()
+        cur.close()
+    return redirect("/admin_dashboard/companyes")
 
 
 if __name__ == "__main__":
