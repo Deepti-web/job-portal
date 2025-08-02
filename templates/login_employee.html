@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>Employee Login</title></head>
+<body>
+    <h2>Employee Login</h2>
+    <form method="post">
+        Email: <input type="email" name="email" required><br><br>
+        Password: <input type="text" name="password" required><br><br>
+        <input type="submit" value="Login">
+    </form><br><br>
+    <a href="/forgate_password_email_e">Forgate Password</a>
+    <p>{% with messages = get_flashed_messages() %}{% if messages %}{{ messages[0] }}{% endif %}{% endwith %}</p>
+    {% if error %}
+    <p>{{ error }}</p>
+    {% endif %}
+</body>
+</html>

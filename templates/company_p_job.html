@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>company post job</title>
+</head>
+<body>
+    <h3>Post a Job</h3>
+    <form method="post">
+        Title: <input type="text" name="title" required><br>
+
+        jobrole: <input type="text" name="role"><br>
+
+        <p>job type</p>
+        <select name="job_type" required>
+        <option value="Internship"> For Internship</option>
+        <option value="Hiring">Hiring</option>
+        </select><br><br>
+
+        <p>Location</p>
+        country: <input type="text" name="country" required>
+        state: <input type="text" name="state" required>
+        city: <input type="text" name="city" required>
+        zip/pin: <input type="text" name="pin" required>
+
+        <p>Salary</p>
+        salary range 1: <input type="text" name="slary1" required>
+        salary range 2: <input type="text" name="slary2" required>
+        <select name="salarytime" required>
+        <option value="yr">yr</option>
+        <option value="month">month</option>
+        </select><br><br>
+
+        <p>Work Arrangement</p>
+        <select name="Work_Arrangement" required>
+        <option value="Remote">Remote</option>
+        <option value="On-site">On-site</option>
+        </select><br><br>
+        
+        <p>Employment_Type</p>
+        <select name="Employment_Type" required>
+        <option value="Full-Time">Full-Time</option>
+        <option value="Part-Time">Part-Time</option>
+        </select><br><br>
+
+        <p>Loking for</p>
+        <select name="profesion" required>
+        <option value="intern">intern</option>
+        <option value="Fresher">Fresher</option>
+        <option value="Expert">Expert</option>
+        </select>
+
+        experience required(in yr): <input type="number" name="experience" required><br><br>
+
+        compolsary skill: <input type="text" name="compskil"><br><br>
+
+        last date of apply:   <input type="date" id="datePicker" name="date" required><br><br>
+
+        Description: <input type="text" name="description" required><br><br>
+
+        <input type="submit" value="Post Job">
+    </form>
+
+</body>
+</html>

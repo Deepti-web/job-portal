@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><title>Company Dashboard</title></head>
+<body>
+    <h2>Welcome, {{ session['company_name'] }}</h2>
+    <a href="/postjob"><button>post a new job</button></a>
+
+    <h3>Your Job Posts</h3>
+    <ul>
+        {% for job in jobs %}
+            <li><strong>{{ job.title }}</strong>: {{ job.description }}</li>
+            <a href="/removehsspx/{{ job.id }}"><button>remove</button></a>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('company_ap') }}"><button>View Applications</button></a><br><br>
+    <a href="{{ url_for('aproved_clint') }}"><button>aproved_clint</button></a><br><br>
+    <a href="/company_profile"><button>profile</button></a><br><br>
+    <a href="/logout">Logout</a>
+
+    <script>
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Set the min attribute to prevent selecting past dates
+    document.getElementById("datePicker").setAttribute("min", today);
+</script>
+</body>
+</html>

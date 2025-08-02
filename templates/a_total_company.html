@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All company</title>
+</head>
+<body>
+        {% for company in companyes %}
+    <p>----------    $$    ----------</p>
+        <p>.Company name:- {{ company.name}}</p>
+        <p> Email:- {{ company.email }}</p>
+        <p> Contact Number:- {{ company.mobile }}</p>
+        <p>.company gst no.:- {{ company.gst }}</p>
+        <p>.company registration date :- {{ company.company_registration_date}}</p>
+        <p>.company registration date on portal:- {{ company.registration_date}}</p>
+        <a href="###"><button>Edit</button></a>
+        <a href="###"><button>Delete</button></a>
+    <p>----------    ##    ----------</p>
+    {% endfor %}
+</body>
+</html>

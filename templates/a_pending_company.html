@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending companyes</title>
+</head>
+<body>
+    {% for company in companyes %}
+    <p>----------    $$    ----------</p>
+        <p>.Company name:- {{ company.name}}</p>
+        <p> Email:- {{ company.email }}</p>
+        <p>.company gst no.:- {{ company.gst }}</p>
+        <p>.company registration date :- {{ company.company_registration_date}}</p>
+        <p>.company apply date in portal:- {{ company.registration_date}}</p>
+        <a href="###"><button>Aprove</button></a>
+        <a href="###"><button>Reject</button></a>
+    {% endfor %}
+</body>
+</html>

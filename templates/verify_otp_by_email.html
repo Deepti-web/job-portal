@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>change password</title>
+</head>
+<body>
+    <form method="post" action="/forgate_password_email_e">
+        <input type="email" name="email" placeholder="enter the adress" value="{{ request.form.get('email', '') }}" required>
+        <button name="action" value="send">Send otp</button>
+        <input type="text" name="otp" placeholder="enter the otp" value="{{ request.form.get('otp', '') }}">
+        <button name="action" value="verify">Verify</button>
+    </form>
+{% for category, msg in get_flashed_messages(with_categories=true) %}
+    <div class="alert alert-{{ category }}">{{ msg }}</div>
+{% endfor %}
+</body>
+</html>

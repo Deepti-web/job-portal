@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Profile Photo</title>
+    <style>
+    .profile-box {
+        width: 200px;
+        height: 200px;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .profile-box img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+    }
+</style>
+
+</head>
+<body>
+    <h2>Upload Your Profile Photo</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="photo" accept=".pdf, .jpg, .jpeg, .png" required>
+        <button type="submit">Upload</button>
+    </form>
+{% for photo in photos %}
+    <div class="profile-box">
+        <img src="data:image/jpeg;base64,{{ photo.image_data }}" alt="Profile Logo">
+    </div>
+{% endfor %}
+</body>
+</html>

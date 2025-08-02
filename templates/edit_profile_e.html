@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profie</title>
+            <style>
+        .thumbnail {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            transition: border 0.2s;
+        }
+        .thumbnail:hover {
+            border: 2px solid #333;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            display: block;
+            margin: 5% auto;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+        .close {
+            position: absolute;
+            top: 20px; right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+        {% for photo in photos %}
+        <img src="data:image/jpeg;base64,{{ photo.image_data }}" class="thumbnail" onclick="showModal(this)"><br><br>
+        {% endfor %}
+        <a href="/edit_employee_pic"><button>Change Profile Photo</button></a><br><br>
+        <form method="POST">
+        Name: <input type="text" name="name" value="{{ user.name }}" required><br><br>
+        Email: <input type="email" name="email" value="{{ user.email }}" required><br><br>
+        Mobile: <input type="text" name="mobile" value="{{ user.mobile }}" required><br><br>
+        Date of birth: <input type="date" name="dob" value="{{ user.dob }}" required><br><br>
+        Address: <textarea name="address" required>{{ user.adress }}</textarea><br><br>
+        <p>Gender</p>
+        <select name="gender" value="{{ user.dob }}">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="other">Other</option>
+        </select><br><br>
+        role: <input type="text" name="role" value="{{ user.role }}" required><br><br>
+        <input type="submit" value="Update Profile">
+    </form>
+    </div>
+    <a href="/"></a>
+    <div id="imgModal" class="modal">
+        <span class="close" id="closeBtn">&times;</span>
+        <img class="modal-content" id="modalImg">
+    </div>
+    <script>
+        function showModal(img) {
+            var modal = document.getElementById("imgModal");
+            var modalImg = document.getElementById("modalImg");
+            modal.style.display = "block";
+            modalImg.src = img.src;
+        }
+
+        // Close modal when clicking the close button
+        document.getElementById("closeBtn").onclick = function(event) {
+            document.getElementById("imgModal").style.display = "none";
+        }
+
+        // Close modal when clicking outside the image
+        document.getElementById("imgModal").onclick = function(event) {
+            if (event.target === this) {
+                this.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

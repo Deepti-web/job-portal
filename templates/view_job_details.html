@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>details</title>
+</head>
+<body>
+<ul>
+{% for job in jobs %}
+    <li>
+        <strong>{{ job.title }}</strong><br>
+        <p><span>{{ job.company_name }}</span></p>
+        <p><span>{{ job.country }},{{ job.state }},{{ job.city }}</span></p>
+        <p><span> {{ job.salary }} || {{ job.work_Arrangement }} || {{ job.employment_Type }}</span></p>
+        <p>Job Role: <span>{{ job.job_role }}</span></p>
+        <p><span>{{ job.job_type }}</span> || <span>{{ job.profesion }}</span></p>
+        <p>Experience year required: {{ job.experience }}</p>
+        <p>Compulsory skill: {{ job.comp_skil }}</p>
+        <p>Last date to apply: {{ job.lastdate }}</p><br>
+
+        <form action="{{ url_for('apply', job_id=job.id, job_title=job.title, comp_id=job.company_id) }}" method="POST" enctype="multipart/form-data">
+            <label>Upload Resume:</label>
+            <input type="file" name="resume" required>
+            <button type="submit">Apply</button>
+        </form>
+
+        <a href="/dashboard_employee"><button>Go back</button></a>
+    </li><br>
+{% endfor %}
+</ul>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+            <li>
+            {{ message }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+</body>
+</html>

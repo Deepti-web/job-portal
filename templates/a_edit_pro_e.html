@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>edit profile eployee by admin</title>
+</head>
+<body>
+    {% for photo in photos %}
+        <img src="data:image/jpeg;base64,{{ photo.image_data }}"
+        class="thumbnail"
+        onclick="showModal(this)"
+        style="position: fixed; top: 3cm; right: 2cm; width: 150px; height: auto;" />
+        <br><br>
+    {% endfor %}
+    <form method="POST">
+        Name: <input type="text" name="name" value="{{ user.name }}" required><br><br>
+        Email: <input type="email" name="email" value="{{ user.email }}" required><br><br>
+        Mobile: <input type="text" name="mobile" value="{{ user.mobile }}" required><br><br>
+        Date of birth: <input type="date" name="dob" value="{{ user.dob }}" required><br><br>
+        Address: <textarea name="address" required>{{ user.adress }}</textarea>
+        <p>Gender</p>
+        <select name="gender" value="{{ user.dob }}">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="other">Other</option>
+        </select><br><br>
+        role: <input type="text" name="role" value="{{ user.role }}" required><br><br>
+        <input type="submit" value="Update Profile">
+    </form>
+    <p>{% with messages = get_flashed_messages() %}{% if messages %}{{ messages[0] }}{% endif %}{% endwith %}</p>
+</body>
+</html>

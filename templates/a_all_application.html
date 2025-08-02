@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications</title>
+</head>
+<body>
+    <h1>All Applications</h1>
+            {% for application in applications %}
+    <p>----------    $$    ----------</p>
+        <p>job id :- {{ application.job_id}}</p>
+        <p>job_title:- {{ application.job_title }}</p>
+        <p>employee_id :- {{ application.employee_id}}</p>
+        <p> employee_name:- {{ application.employee_name }}</p>
+        <p>employee_email :- {{ application.employee_email }}</p>
+        <p>comp_id :- {{ application.comp_id}}</p>
+        <a href="###"><button>Edit</button></a>
+        <a href="###"><button>Delete</button></a>
+    <p>----------    ##    ----------</p>
+    {% endfor %}
+</body>
+</html>

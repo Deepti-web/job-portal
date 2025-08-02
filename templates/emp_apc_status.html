@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application status</title>
+</head>
+<body>
+    <h1>Application status</h1>
+            {% for st in status %}
+            <li>
+                <strong>{{ st.job_title }}</strong>||Apply date - <strong>{{ st.apply_date }}</strong> <br>
+                <p><span>{{ st.company_name }}</span></p>
+                        <p><span>{{ st.status }}</span> <span>({{ st.activity_date }})</span></p>
+            </li><br>
+            {% endfor %}
+    </ul>
+</body>
+</html>

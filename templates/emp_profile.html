@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        .thumbnail {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            transition: border 0.2s;
+        }
+        .thumbnail:hover {
+            border: 2px solid #333;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            display: block;
+            margin: 5% auto;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+        .close {
+            position: absolute;
+            top: 20px; right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    
+    {% for photo in photos %}
+        <img src="data:image/jpeg;base64,{{ photo.image_data }}" class="thumbnail" onclick="showModal(this)"><br><br>
+    {% endfor %}
+    <a href="/edit_profile_e"><button>Edit</button></a>
+    <div>
+        {% for detal in details %}
+        Name:<strong>{{ detal.name }}</strong> <br> Email:<span>{{ detal.email }}</span><br>
+        <p>Role - <span>{{ detal.role }} </span></p>
+        <p>mobile no. - <span> {{ detal.mobile }}</span></p>
+        <p>Date of birth - <span>{{ detal.dob }}</span></p>
+        <p>Gender - <span>{{ detal.gender }}</span></p>
+        <p>Adress - <span> {{ detal.adress }}</span></p>
+        <br>
+        {% endfor %}
+        <a href="/dashboard_employee">
+            <button type="button">Back</button>
+        </a>
+        <a href="/change_password"><button>change password</button></a>
+    </div>
+
+
+
+    <div id="imgModal" class="modal">
+        <span class="close" id="closeBtn">&times;</span>
+        <img class="modal-content" id="modalImg">
+    </div>
+
+    <script>
+        function showModal(img) {
+            var modal = document.getElementById("imgModal");
+            var modalImg = document.getElementById("modalImg");
+            modal.style.display = "block";
+            modalImg.src = img.src;
+        }
+
+        // Close modal when clicking the close button
+        document.getElementById("closeBtn").onclick = function(event) {
+            document.getElementById("imgModal").style.display = "none";
+        }
+
+        // Close modal when clicking outside the image
+        document.getElementById("imgModal").onclick = function(event) {
+            if (event.target === this) {
+                this.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

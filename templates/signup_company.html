@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head><title>Employee Signup</title></head>
+<body>
+<!-- The provided HTML code is creating a form for employee signup. Here's a breakdown of what each part of the code is doing: -->
+    <h2>Employee Signup</h2>
+    <form method="post"  action="{{ url_for('signup_company') }}">
+        Full Name Of company : <input type="text" name="name" required><br><br>
+        Offficial Email: <input type="email" name="email" required><br>
+                <p>country_code</p>
+        <select name="country_code" required>
+        <option value="+91">+91</option>
+        <option value="+1">+1</option>
+        <option value="+44">+44</option>
+        <option value="+61">+61</option>
+        <option value="+49">+49</option>
+        <option value="+33">+33</option>
+        <option value="+86">+86</option>
+        </select><br><br>
+        mobile no.: <input type="text" name="mobile" required><br><br>
+        Industry Type: <input type="text" name="industry_type" required><br><br>
+        <p>(eg. IT, manufacturing)</p>
+        company Type: <input type="text" name="company_type" required><br><br>
+        <p>(eg. Private, Public, Start up, Govt.)</p>
+        Company Website: <input type="text" name="company_website" required><br><br>
+        <p>Adress</p>
+        country: <input type="text" name="country" required>
+        state: <input type="text" name="state" required>
+        city: <input type="text" name="city" required>
+        zip/pin: <input type="text" name="pin" required><br><br>
+        Contact persion name:<input type="text" name="contact_persion_name" required><br><br>
+        Contact persion position:<input type="text" name="contact_persion_position" required><br><br>
+        GST number.:<input type="text" name="gst" required><br><br>
+        Registration Date .:<input type="date" name="registration_date" required><br><br>
+                <input type="submit" value="Signup">
+    </form>
+    <h3>please enter right information</h3>
+</body>
+</html>

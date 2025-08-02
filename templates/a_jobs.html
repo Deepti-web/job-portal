@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Jobs</title>
+</head>
+<body>
+        {% for job in jobs %}
+    <p>----------    $$    ----------</p>
+        <p>.Company id:- {{ job.company_id}}</p>
+        <p> title:- {{ job.title }}</p>
+        <p>company_name.:- {{ job.company_name }}</p>
+        <p>lastdate :- {{ job.lastdate}}</p>
+        <a href="###"><button>company details</button></a>
+        <a href="###"><button>Applied employees</button></a>
+        <a href="###"><button>edit</button></a>
+        <a href="###"><button>delete</button></a>
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,27 @@
+    <ul>
+        {% for app in applications %}
+            <li>Job ID: {{ app.job_id }} - Employee ID: {{ app.employee_id }}, Email: {{ app.employee_email }}</li>
+            <a href="/aprove/{{ app.employee_email }}"><button>Aprove</button></a>
+        {% endfor %}
+    </ul>
+
+
+
+                <a href="/aprove/{{ app.employee_email }}{{ app.job_title | urlencode }}{{ app.job_id | urlencode }}{{ app.employee_name }}"><button>Aprove</button></a>
+
+
+
+
+                 <a href="/apply/{{ job.id }}/{{ job.title | urlencode }}"  onclick="applyEffect(this, event)">
+                    <button type="button">Apply</button></a>
+
+
+
+
+
+                                    <a href="{{ url_for('remove', job_title=app.job_title, employee_email=app.employee_email, employee_name=app.employee_name, job_id=app.job_id, employee_id=app.employee_id) }}">
+    <button type="button">remove</button>
+</a>
+
+
+, job_id=job.id, job_title=job.title,comp_id=job.company_id )

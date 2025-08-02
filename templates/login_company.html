@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Company Login</title></head>
+<body>
+    <h2>Company Login</h2>
+    <form method="post">
+        Email: <input type="email" name="email" required><br>
+        Password: <input type="text" name="password" required><br>
+        <input type="submit" value="Login">
+    </form>
+    <a href="/forgate_password_email_c">Forgate password</a>
+    {% if error %}
+    <p>{{ error }}</p>
+    {% endif %}
+</body>
+</html>
