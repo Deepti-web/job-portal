@@ -3,4 +3,5 @@
     {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
     <input type="text" name="otp" placeholder="Enter OTP" required><br>
     <button type="submit">Check</button>
+    <p>{% with messages = get_flashed_messages() %}{% if messages %}{{ messages[0] }}{% endif %}{% endwith %}</p>
 </form>

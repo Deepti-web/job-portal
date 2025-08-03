@@ -59,6 +59,10 @@ current_time = real_datetime.strftime("%H:%M")
 # Home
 @app.route("/")
 def index():
+    return render_template("home.html")
+
+@app.route("/auth",methods=["GET"])
+def auth():
     return render_template("index.html")
 
 # Company Signup/Login
@@ -165,7 +169,7 @@ def login_company():
             if company["status"] == "pending":
                 session.clear()
                 return "<h1>❌ your account is now not Activate	 ❌</h1>"
-            if company["status"] == "blocked":
+            if company["status"] == "Block":
                 session.clear()
                 return "<h1>❌ your account is Blocked ❌</h1>"
             if not company["logo"]:
@@ -197,6 +201,8 @@ def login_company():
 
 @app.route("/company_pic", methods=["GET", "POST"])
 def profile_pic_c():
+    if "company_id" not in session:
+        return redirect("login_company")
     if request.method == "POST":
             file = request.files['photo']
             if file:
@@ -337,33 +343,44 @@ def change_password_c():
 
 @app.route("/forgate_password_c", methods=["GET", "POST"])
 def forgate_password_c():
-    if "company_id"  and "company_email" not in session:
+    if "company_id" not in session or "company_email" not in session:
         return redirect("/login_company")
-    
-    otp = str(random.randint(100000, 999999))
-    session["otp"] = otp
-    receiver_email = session["company_email"]
-    subject ="!important"
-    body =  f"""
-            <html>
-            <body>
-                <p style="color: #000000; font-size: 20px;">Hello</p>
-                <p style="color: #000000; font-size: 15px;">your otp for change password</p><br>
-                <p style="color: #000000; font-size: 23px;"><b>{otp}<b></p><br>
-            </body>
-            </html>
-            """
-    send_email(subject, body, receiver_email)
+    error = None
     if request.method == "POST":
-        otp = request.form["otp"]
-        if otp == otp:
-            return redirect("/new_password_c")
-    return render_template("verify_otp.html")
+        action = request.form.get("action")
+
+        if action == "send":
+            # ✅ Send OTP
+            otp = str(random.randint(100000, 999999))
+            session["otp"] = otp
+            receiver_email = session["company_email"]
+            subject = "!important"
+            body = f"""
+                <html>
+                <body>
+                    <p style="color: #000000; font-size: 20px;">Hello</p>
+                    <p style="color: #000000; font-size: 15px;">Your OTP for changing password:</p><br>
+                    <p style="color: #000000; font-size: 23px;"><b>{otp}</b></p><br>
+                </body>
+                </html>
+            """
+            send_email(subject, body, receiver_email)
+            flash("OTP has been sent to your email.")
+        elif action == "check":
+            # ✅ Check OTP
+            inotp = request.form.get("otp")
+            if session.get("otp") == inotp:
+                # session.pop("otp", None)
+                return redirect("/new_password_c")
+            else:
+                flash("Incorrect otp")
+                # error = "Incorrect OTP"
+    return render_template("verify_otp_c&e_in prof.html")
 
 
 @app.route("/new_password_c", methods=["GET", "POST"])
 def new_password_c():
-    if "company_id"  and "company_email" and "otp" not in session:
+    if "company_id" not in session or "otp" not in session:
         return redirect("/login_company")
     
     if request.method == "POST":
@@ -629,25 +646,36 @@ def forgate_password():
     if "employee_id"  and "employee_email" not in session: #gggh
         return redirect("/login_employee")
     
-    otp = str(random.randint(100000, 999999))
-    session["otp"] = otp
-    receiver_email = session["employee_email"]
-    subject ="!important"
-    body =  f"""
-            <html>
-            <body>
-                <p style="color: #000000; font-size: 20px;">Hello</p>
-                <p style="color: #000000; font-size: 15px;">your otp for change password</p><br>
-                <p style="color: #000000; font-size: 23px;"><b>{otp}<b></p><br>
-            </body>
-            </html>
-            """
-    send_email(subject, body, receiver_email)
     if request.method == "POST":
-        otp = request.form["otp"]
-        if otp == otp:
-            return redirect("/new_password_e")
-    return render_template("verify_otp.html")
+        action = request.form.get("action")
+
+        if action == "send":
+            # ✅ Send OTP
+            otp = str(random.randint(100000, 999999))
+            session["otp"] = otp
+            receiver_email = session["employee_email"]
+            subject = "!important"
+            body = f"""
+                <html>
+                <body>
+                    <p style="color: #000000; font-size: 20px;">Hello</p>
+                    <p style="color: #000000; font-size: 15px;">Your OTP for changing password:</p><br>
+                    <p style="color: #000000; font-size: 23px;"><b>{otp}</b></p><br>
+                </body>
+                </html>
+            """
+            send_email(subject, body, receiver_email)
+            flash("OTP has been sent to your email.")
+        elif action == "check":
+            # ✅ Check OTP
+            inotp = request.form.get("otp")
+            if session.get("otp") == inotp:
+                # session.pop("otp", None)
+                return redirect("/new_password_e")
+            else:
+                flash("Incorrect otp")
+                # error = "Incorrect OTP"
+    return render_template("verify_otp_c&e_in prof.html")
 
 @app.route("/new_password_e", methods=["GET", "POST"])
 def new_password_e():
@@ -1113,7 +1141,7 @@ def admin_total_company():
     if "a_id"  not in session:
             return redirect("/")
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM companies WHERE status=%s",("aproved",))
+    cur.execute("SELECT * FROM companies WHERE status IN (%s, %s, %s)", ("aproved", "Block", "Unblock"))
     companyes = cur.fetchall()
     cur.close()
     return render_template("a_total_company.html", companyes = companyes)
@@ -1187,22 +1215,6 @@ def a_edit_profile_e(emp_id):
     cur.close()
     return render_template("a_edit_pro_e.html", user=user, photos=photo_list)
 
-@app.route("/2300/admin_dashboard/seeker/Delete/<int:emp_id>")
-def a_delete_emp(emp_id):
-    if "a_id" not in session:
-        return redirect("/")
-    cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM employees WHERE id=%s", (emp_id,))
-    mysql.connection.commit()
-    cur.close()
-
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM employees")
-    employees = cur.fetchall()
-    cur.close()
-    # return render_template("a_total_employee.html", employees=employees)
-    return redirect("/2300/admin_dashboard/seeker")
-
 @app.route("/2300/admin_dashboard/seeker/status", methods=["POST"])
 def a_status_emp():
     if "a_id" not in session:
@@ -1211,12 +1223,17 @@ def a_status_emp():
     action = request.form.get("action")
     if not emp_id or not action:
         return "Invalid form submission", 400
-    new_status = "Block" if action == "Block" else "Unblocked"
-
+    new_status = "Block" if action == "Block" else "Unblock"
     cur = mysql.connection.cursor()
     cur.execute("UPDATE employees SET status=%s WHERE id=%s", (new_status, emp_id))
     mysql.connection.commit()
     cur.close()
+
+    if action == "delete":
+        cur = mysql.connection.cursor()
+        cur.execute("DELETE FROM employees WHERE id=%s", (emp_id,))
+        mysql.connection.commit()
+        cur.close()
     return redirect("/2300/admin_dashboard/seeker")
 
 @app.route("/admin_dashboardadmin_dashboard/companyes/status",methods=["POST"])
@@ -1285,10 +1302,34 @@ def a_b_unb_company():
         cur.close()
     if action == "Unblock":
         cur = mysql.connection.cursor()
-        cur.execute("UPDATE companies SET status = %s WHERE id=%s",("Unblocked",company_id))
+        cur.execute("UPDATE companies SET status = %s WHERE id=%s",("Unblock",company_id))
         mysql.connection.commit()
         cur.close()
-    return redirect("/admin_dashboard/companyes")
+    return redirect("/2300/admin_dashboard/companyes")
+
+@app.route("/admin_dashboard/seeker/details/<int:emp_id>")
+def a_view_e_details(emp_id):
+    if "a_id" not in session:
+        return redirect("/auth")
+    cur = mysql.connection.cursor()
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT image FROM employees WHERE id=%s",(emp_id,))
+    photo = cur.fetchone()
+    photo_list = []
+    if photo and photo["image"]:
+        image_blob = photo["image"]
+        b64_image = base64.b64encode(image_blob).decode('utf-8')
+        photo_list.append({'image_data': b64_image})
+    
+    cur.execute("SELECT * FROM employees WHERE id=%s",(emp_id,))
+    user = cur.fetchone()
+    
+    cur.execute("SELECT * FROM status WHERE id=%s",(emp_id,))
+    status = cur.fetchone()
+
+    cur.execute("SELECT * FROM applications WHERE id=%s",(emp_id,))
+    applications = cur.fetchone()
+    return render_template("a_view_e_details.html", photos = photo_list, user=user, status=status, appliation = applications)
 
 
 if __name__ == "__main__":

@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='css/Home.css') }}"> -->
     <link rel="stylesheet" href="Home.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-<style>
-   
-</style>
 </head>
 <body>
     <!-- navbar -->
-     <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Job-Pilot</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +25,7 @@
           <a class="nav-link"href="#">Find-job</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Sign-up</a>
+          <a class="nav-link" href="/auth">Sign-up</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Contact us</a>
@@ -38,9 +36,9 @@
       </ul>
       
     </div>
-    <form class="d-flex" role="search">
-        <input class="form-control me-3 w-100" type="search" placeholder="Search the job " aria-label="Search" style="width: 10rem;"/>
-        <button class="btn btn-outline-primary" type="submit">Search</button>
+    <form class="d-flex" role="search" action="{{ url_for('auth') }}" method="get">
+    <input class="form-control me-3 w-100" type="search" placeholder="Search the job " aria-label="Search" style="width: 10rem;"/>
+    <button class="btn btn-outline-primary" type="submit">Search</button>
       </form>
   </div>
   
@@ -54,19 +52,20 @@
           Aliquam vitae turpis in diam convallis finibus in at risus. Nullam<br>
           in scelerisque leo, eget sollicitudin velit vestibulum.
         </p>
-        <form class="search-form">
+        <form class="search-form" action="{{ url_for('auth') }}" method="get">
           <input type="text" placeholder="Job title, Keyword...">
           <input type="text" placeholder="Your Location">
-          <button type="submit">Find Job</button>
+            <button>Find Job</button>
         </form>
         <div class="suggestion">
-          Suggestion: 
-          <span>Designer, Programing, <a href="#">Digital Marketing</a>, Video, Animation.</span>
+          Suggestion:
+          <span>Designer, Programing, Digital Marketing, Video, Animation.</span>
         </div>
       </div>
       <div class="right-section">
         <!-- Illustration Placeholder: Replace with your SVG or image as needed -->
-        <img src="generated-image.png" alt="Logo" alt="Logo" alt="Logo" alt="Illustration" class="illustration">
+        <!--<img src="{{ url_for('static', filename='images/generated-image.png') }}" alt="Logo" class="illustration"> -->
+        <img src="generated-image.png" alt="logo" class="illustration">
       </div>
     </div>
     <div class="stats-section">

@@ -1,1 +1,1 @@
-signup_
+/admin_dashboard/companyes

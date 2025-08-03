@@ -63,13 +63,12 @@
     <p>.employee last login:- {{ employee.login_info}}</p>
     <p>{{ employee.status }}</p>
     <a href="{{ url_for('a_edit_profile_e', emp_id=employee.id)}}"><button>Edit</button></a>
-    <a href="{{ url_for('a_delete_emp', emp_id=employee.id) }}">
-    <button onclick="return confirm('Are you sure you want to delete this employee?')">Delete</button></a>
-
+    <a href="{{ url_for('a_view_e_details', emp_id=employee.id)}}"><button>View details</button></a>
     <form method="POST" action="{{ url_for('a_status_emp') }}">
         <input type="hidden" name="emp_id" value="{{ employee.id }}">
         <button onclick="return confirm('Are you sure you want to Block this employee?')" name="action" value="Block">Block</button>
         <button onclick="return confirm('Are you sure you want to Un Block this employee?')" name="action" value="UnBlock">UnBlock</button>
+        <button onclick="return confirm('Are you sure you want to delete this employee?')" name="action" value="delete">Delete</button>
     </form>
 
 <p>----------    ##    ----------</p>
