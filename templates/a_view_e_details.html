@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View employee details</title>
+</head>
+<body>
+    <a href="/admin_dashboard"><button>Go back</button></a>
+    {% for photo in photos %}
+        <img src="data:image/jpeg;base64,{{ photo.image_data }}"
+        class="thumbnail"
+        onclick="showModal(this)"
+        style="position: fixed; top: 3cm; right: 2cm; width: 150px; height: auto;" />
+        <br><br>
+    {% endfor %}
+    <p>Employee name:- {{ employee.name}}</p>
+    <p> Email:- {{ employee.email }}</p>
+    <p> Contact Number:- {{ employee.mobile }}</p>
+    <p>.employee role:- {{ employee.role }}</p>
+    <p>.employee gender :- {{ employee.gender}}</p>
+    <p>.employee adress :- {{ employee.adress}}</p>
+    <p>.employee registration date on portal:- {{ employee.registration_date}}</p>
+    <p>status:- {{ employee.status }}</p>
+    <p>.employee last login:- {{ employee.login_info}}</p>
+    <h3>Applications ::- </h3>
+    {% for app in application %}
+        <p>Application id:- {{ app.id }} &nbsp;&nbsp;&nbsp; job titel:- {{ app.job_title }}</p>
+    {% endfor %}
+    <h3>status ::- </h3>
+    {% for status in statuses %}
+        <p>Status id:- {{ status.id }} &nbsp;&nbsp;&nbsp; Apply date :- {{ status.apply_date }} &nbsp;&nbsp;&nbsp; job id:- {{ status.job_id}} &nbsp;&nbsp;&nbsp; titele:- {{ status.job_title}}
+        status:- {{ status.status}} &nbsp;&nbsp;&nbsp; responce date:- {{ status.activity_date}} &nbsp;&nbsp;&nbsp; Company id :-{{ status.company_id}} &nbsp;&nbsp;&nbsp; company name :- {{ status.company_name}}
+        </p>
+        <p></p>
+    {% endfor %}
+    <div>
+        <a href="{{ url_for('download_user', emp_id=employee.id) }}">
+    <button type="button">Download User Details</button>
+</a>
+    </div>
+</body>
+</html>
