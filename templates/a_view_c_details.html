@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View employee details</title>
+</head>
+<body>
+    <a href="/admin_dashboard"><button>Go back</button></a>
+    {% for photo in photos %}
+        <img src="data:image/jpeg;base64,{{ photo.image_data }}"
+        class="thumbnail"
+        onclick="showModal(this)"
+        style="position: fixed; top: 3cm; right: 2cm; width: 150px; height: auto;" />
+        <br><br>
+    {% endfor %}
+    <p>Company name:- {{ user.name}}</p>
+    <p>Company CIN:- {{ user.gst}}</p>
+    <p> Email:- {{ user.email }}</p>
+    <p> Contact Number:- {{ user.mobile }}</p>
+    <p>company adress :- {{ user.adress}}</p>
+    <p>company_type :- {{ user.company_type}}</p>
+    <p>company_website :- {{ user.company_website}}</p>
+    <p>contact_persion_name :- {{ user.contact_persion_name}}</p>
+    <p>contact_persion_position :- {{ user.contact_persion_position}}</p>
+    <p> company registration date:- {{ user.company_registration_date}}</p>
+    <p>company registration date on portal:- {{ user.registration_date}}</p>
+    <p>company last login:- {{ user.login_info}}</p>
+    <p>status:- {{ user.status }}</p>
+    <h3>Posted jobs ::- </h3>
+    {% for job in jobs %}
+        <p>job id:- {{ job.id }} &nbsp;&nbsp;&nbsp; title:- {{ job.title}} &nbsp;&nbsp;&nbsp; post date :- {{ job.post_dt }} &nbsp;&nbsp;&nbsp; status:- {{ job.status}}</p>
+    {% endfor %}
+</body>
+</html>
