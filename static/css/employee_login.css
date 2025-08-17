@@ -1,0 +1,120 @@
+/* Page background */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #007BFF, #00A8FF);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Login container */
+.login-container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+    width: 350px;
+    text-align: center;
+}
+
+/* Heading */
+.login-container h2 {
+    margin-bottom: 20px;
+    color: #007BFF;
+}
+
+/* Form layout */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Labels */
+.login-form label {
+    text-align: left;
+    font-weight: bold;
+    color: #004085;
+    font-size: 0.9rem;
+}
+
+/* Inputs */
+.login-form input[type="email"],
+.login-form input[type="password"],
+.login-form input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.login-form input:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+.captcha-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap; /* ensures it doesn't overflow on smaller screens */
+}
+
+.captcha-box img {
+    height: 35px; /* smaller height */
+    width: 100px; /* smaller width */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    object-fit: contain;
+}
+
+.captcha-box input[type="text"] {
+    flex: 1; /* take remaining space */
+    min-width: 120px;
+}
+/* Submit button */
+.btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Forgot password link */
+.forgot-link {
+    display: block;
+    margin-top: 15px;
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+/* Error messages */
+.error {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.show-pass {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 5px; /* was -50px */
+}

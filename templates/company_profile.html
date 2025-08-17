@@ -3,91 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <style>
-        .thumbnail {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            transition: border 0.2s;
-        }
-        .thumbnail:hover {
-            border: 2px solid #333;
-        }
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.8);
-        }
-        .modal-content {
-            display: block;
-            margin: 5% auto;
-            max-width: 90vw;
-            max-height: 90vh;
-        }
-        .close {
-            position: absolute;
-            top: 20px; right: 35px;
-            color: #fff;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-    </style>
+    <title>Company Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/company_profile.css') }}">
 </head>
 <body>
+<div class="profile-container">
+    <!-- Profile Photo -->
     {% for photo in photos %}
-        <img src="data:image/jpeg;base64,{{ photo.image_data }}" class="thumbnail" onclick="showModal(this)"><br><br>
+        <div class="profile-image">
+            <img src="data:image/jpeg;base64,{{ photo.image_data }}" alt="Profile Photo">
+        </div>
     {% endfor %}
-    <a href="/edit_profile_c"><button>Edit</button></a>
-    <div>
-        {% for detal in details %}
-        Name:<strong>{{ detal.name }}</strong> <br> Email:<span>{{ detal.email }}</span><br>
-        <p>contact number no. -  <span> {{ detal.mobile }}</span></p>
-        <p>company type:-  <span>{{ detal.company_type }}</span></p>
-        <p>company website:-  <span>{{ detal.company_website }}</span></p>
-        <p>Address:- <span> {{ detal.adress }}</span></p>
-        <p>contact persion name:- <span> {{ detal.contact_persion_name }}</span></p>
-        <p>contact persion position:- <span> {{ detal.contact_persion_position }}</span></p>
-        <p>Since in portal:- <span> {{ detal.registration_date }}</span></p>
-        <a href="/hbddrtye-dc">
-            <button type="button">Back</button>
-        </a>
-        <br>
+
+    <!-- Name -->
+    {% for detal in details %}
+        <h2 class="profile-name">{{ detal.name }}</h2>
+
+        <!-- Profile Info Grid -->
+        <div class="info-grid">
+            <div><strong>Email:</strong> {{ detal.email }}</div>
+            <div><strong>Mobile No.:</strong> {{ detal.mobile }}</div>
+            <div><strong>Company Type:</strong> {{ detal.company_type }}</div>
+            <div><strong>Website:</strong> {{ detal.company_website }}</div>
+            <div><strong>CIN:</strong> {{ detal.gst }}</div>
+            <div><strong>Registrated on:</strong> {{ detal.company_registration_date }}</div>
+            <div><strong>Contact Person Name:</strong> {{ detal.contact_persion_name }}</div>
+            <div><strong>Contact Person Position:</strong> {{ detal.contact_persion_position }}</div>
+            <div><strong>Address:</strong> {{ detal.adress }}</div>
+            <div><strong>Since in Portal:</strong> {{ detal.registration_date }}</div>
+        </div>
     {% endfor %}
-    <a href="/change_password_c"><button>Change Password</button></a>
-    </div>
-    <div id="imgModal" class="modal">
-        <span class="close" id="closeBtn">&times;</span>
-        <img class="modal-content" id="modalImg">
-    </div>
-    <script>
-        function showModal(img) {
-            var modal = document.getElementById("imgModal");
-            var modalImg = document.getElementById("modalImg");
-            modal.style.display = "block";
-            modalImg.src = img.src;
-        }
 
-        // Close modal when clicking the close button
-        document.getElementById("closeBtn").onclick = function(event) {
-            document.getElementById("imgModal").style.display = "none";
-        }
+    <!-- Buttons -->
+    <div class="button-group">
+        <a href="/edit_profile_c"><button>Edit Profile</button></a>
+        <a href="/change_password_c"><button>Change Password</button></a>
+        <a href="/hbddrtye-dc"><button>Back</button></a>
+    </div>
+</div>
 
-        // Close modal when clicking outside the image
-        document.getElementById("imgModal").onclick = function(event) {
-            if (event.target === this) {
-                this.style.display = "none";
-            }
-        }
-    </script>
+<!-- Image Modal -->
+<div id="imgModal" class="modal">
+    <span class="close" id="closeBtn">&times;</span>
+    <img class="modal-content" id="modalImg">
+</div>
+
+<!-- JS for Modal -->
+<script>
+function showModal(img) {
+    const modal = document.getElementById("imgModal");
+    const modalImg = document.getElementById("modalImg");
+    modal.style.display = "block";
+    modalImg.src = img.src;
+}
+
+document.getElementById("closeBtn").onclick = function() {
+    document.getElementById("imgModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById("imgModal");
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
 </body>
 </html>

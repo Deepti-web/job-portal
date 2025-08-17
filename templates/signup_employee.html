@@ -1,31 +1,94 @@
 <!DOCTYPE html>
 <html>
-<head><title>Employee Signup</title></head>
+<head>
+    <title>Employee Signup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employee_signup.css') }}">
+</head>
 <body>
-    <h2>Employee Signup</h2>
-    <form method="post" enctype="multipart/form-data" action="{{ url_for('register') }}">
-        Full Name: <input type="text" name="name" required><br><br>
-        Email: <input type="email" name="email" required><br>
-        mobile no.: <input type="number" name="mobile" required><br><br>
-        date of birth: <input type="date" name="db" required><br><br>
-        <p>Gender</p>
-        <select name="Gender" required>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="other">Other</option>
-        </select><br><br>
-        <p>Adress</p>
-        country: <input type="text" name="country" required>
-        state: <input type="text" name="state" required>
-        city: <input type="text" name="city" required>
-        zip/pin: <input type="text" name="pin" required><br><br>
-        highest Qualification:<input type="text" name="qualification" required><br><br>
-        Year of graduation:<input type="text" name="graduation" required><br><br>
-        Specialization:<input type="text" name="Specialization" required><br><br>
-        Job Role: <input type="text" name="role" required><br><br>
-        Job Location: <input type="text" name="location" required><br><br>
-        <input type="submit" value="Signup">
-    </form>
-    <h3>please enter right email for contact</h3>
+    <div class="form-container">
+        <h2>Employee Signup</h2>
+        <form method="post" enctype="multipart/form-data" action="{{ url_for('register') }}">
+
+            <div class="form-grid">
+                <div>
+                    <label>Full Name:</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div>
+                    <label>Email:</label>
+                    <input type="email" name="email" required>
+                    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label>Mobile No.:</label>
+                    <input type="number" name="mobile" required>
+                </div>
+                <div>
+                    <label>Date of Birth:</label>
+                    <input type="text" name="db" placeholder="DD-MM-YYYY" required pattern="\d{2}-\d{2}-\d{4}">
+                </div>
+
+                <div>
+                    <label>Gender:</label>
+                    <select name="Gender" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Highest Qualification:</label>
+                    <input type="text" name="qualification" required>
+                </div>
+
+                <div>
+                    <label>Year of Graduation:</label>
+                    <input type="text" name="graduation" required>
+                </div>
+                <div>
+                    <label>Specialization:</label>
+                    <input type="text" name="Specialization" required>
+                </div>
+
+                <div>
+                    <label>Job Role:</label>
+                    <input type="text" name="role" required>
+                </div>
+                <div>
+                    <label>Job Location:</label>
+                    <input type="text" name="location" required>
+                </div>
+
+                <div class="address-block">
+                    <label>Address:</label>
+                    <div class="address-group">
+                        <input type="text" name="country" placeholder="Country" required>
+                        <input type="text" name="state" placeholder="State" required>
+                        <input type="text" name="city" placeholder="City" required>
+                        <input type="text" name="pin" placeholder="Zip/Pin" required>
+                    </div>
+                </div>
+
+                <div class="captcha-block">
+                    <label>Captcha:</label>
+                    <div class="captcha-row">
+                        <img src="../static/captcha/r_e_captcha.png" alt="Captcha">
+                        <input type="text" name="captcha" placeholder="Enter Captcha" required>
+                    </div>
+                </div>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <p class="flash-message">{{ messages[0] }}</p>
+                {% endif %}
+            {% endwith %}
+
+            <input type="submit" value="Signup">
+        </form>
+
+        <h3>Please enter a valid Information for contact</h3>
+    </div>
 </body>
 </html>

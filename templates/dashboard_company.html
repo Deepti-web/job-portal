@@ -1,28 +1,47 @@
 <!DOCTYPE html>
-<html>
-<head><title>Company Dashboard</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_company.css') }}">
+</head>
 <body>
-    <h2>Welcome, {{ session['company_name'] }}</h2>
-    <a href="/postjob"><button>post a new job</button></a>
 
-    <h3>Your Job Posts</h3>
-    <ul>
-        {% for job in jobs %}
-            <li><strong>{{ job.title }}</strong>: {{ job.description }}</li>
-            <a href="/removehsspx/{{ job.id }}"><button>remove</button></a>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('company_ap') }}"><button>View Applications</button></a><br><br>
-    <a href="{{ url_for('aproved_clint') }}"><button>aproved_clint</button></a><br><br>
-    <a href="/company_profile"><button>profile</button></a><br><br>
-    <a href="/logout"><button>logout</button></a>
+    <header>
+        <h2>Welcome</h2>
+        <nav>
+            <a href="/postjob"><button>Post a New Job</button></a>
+            <a href="{{ url_for('aproved_clint') }}"><button>Approved Clients</button></a>
+            <a href="/company_profile"><button>Profile</button></a>
+            <a href="/logout"><button class="logout-btn">Logout</button></a>
+        </nav>
+    </header>
 
-    <script>
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Set the min attribute to prevent selecting past dates
-    document.getElementById("datePicker").setAttribute("min", today);
-</script>
+    <section>
+        <h3>Your Job Posts</h3>
+        <div class="job-list">
+            {% for job in jobs %}
+                <div class="job-card">
+                    <p class="job-title">{{ job.title }}</p>
+                    <p><strong>Post date:</strong> {{ job.post_dt }}</p>
+                    <p><strong>Last date:</strong> {{ job.lastdate }}</p>
+
+                    <div class="btn-group">
+                        <a href="{{ url_for('remove', job_id=job.id) }}">
+                            <button class="delete-btn" onclick="return confirm('Are you sure you want to delete this job?')">Remove</button>
+                        </a>
+                        <a href="{{ url_for('view_jobs_application', job_id=job.id) }}">
+                            <button>View Applications</button>
+                        </a>
+                        <a href="{{ url_for('view_posted_job_detais', job_id=job.id) }}">
+                            <button>View Details</button>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
 </body>
 </html>

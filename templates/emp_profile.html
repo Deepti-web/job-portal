@@ -1,96 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <style>
-        .thumbnail {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            transition: border 0.2s;
-        }
-        .thumbnail:hover {
-            border: 2px solid #333;
-        }
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.8);
-        }
-        .modal-content {
-            display: block;
-            margin: 5% auto;
-            max-width: 90vw;
-            max-height: 90vh;
-        }
-        .close {
-            position: absolute;
-            top: 20px; right: 35px;
-            color: #fff;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f7fc;
+        margin: 0;
+        padding: 0;
+    }
+
+    .profile-container {
+        max-width: 900px;
+        margin: 30px auto;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .profile-header img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 4px solid #007bff;
+        object-fit: cover;
+    }
+
+    .profile-header h2 {
+        margin-top: 15px;
+        color: #333;
+    }
+
+    .profile-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .info-box {
+        background: #f9fbff;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #e1e7f0;
+    }
+
+    .info-box strong {
+        color: #007bff;
+    }
+
+    .btn-container {
+        margin-top: 25px;
+        text-align: center;
+    }
+
+    .btn-container a button {
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.3s;
+    }
+
+    .btn-container a button:hover {
+        background: #0056b3;
+    }
+</style>
 </head>
 <body>
-    
-    {% for photo in photos %}
-        <img src="data:image/jpeg;base64,{{ photo.image_data }}" class="thumbnail" onclick="showModal(this)"><br><br>
-    {% endfor %}
-    <a href="/edit_profile_e"><button>Edit</button></a>
-    <div>
-        {% for detal in details %}
-        Name:<strong>{{ detal.name }}</strong> <br> Email:<span>{{ detal.email }}</span><br>
-        <p>Role - <span>{{ detal.role }} </span></p>
-        <p>mobile no. - <span> {{ detal.mobile }}</span></p>
-        <p>Date of birth - <span>{{ detal.dob }}</span></p>
-        <p>Gender - <span>{{ detal.gender }}</span></p>
-        <p>Adress - <span> {{ detal.adress }}</span></p>
-        <br>
+
+<div class="profile-container">
+    <div class="profile-header">
+        {% for photo in photos %}
+            <img src="data:image/jpeg;base64,{{ photo.image_data }}" alt="Profile Photo">
         {% endfor %}
-        <a href="/dashboard_employee">
-            <button type="button">Back</button>
-        </a>
-        <a href="/change_password"><button>change password</button></a>
+        {% for detal in details %}
+            <h2>{{ detal.name }}</h2>
+            <!-- <p>{{ detal.role }}</p> -->
+        {% endfor %}
     </div>
 
-
-
-    <div id="imgModal" class="modal">
-        <span class="close" id="closeBtn">&times;</span>
-        <img class="modal-content" id="modalImg">
+    <div class="profile-info">
+        {% for detal in details %}
+            <div class="info-box"><strong>Email:</strong> {{ detal.email }}</div>
+            <div class="info-box"><strong>Mobile No.:</strong> {{ detal.mobile }}</div>
+            <div class="info-box"><strong>Date of Birth:</strong> {{ detal.dob }}</div>
+            <div class="info-box"><strong>Gender:</strong> {{ detal.gender }}</div>
+            <div class="info-box"><strong>qualification:</strong> {{ detal.qualification }}</div>
+            <div class="info-box"><strong>graduation:</strong> {{ detal.graduation }}</div>
+            <div class="info-box"><strong>specialization:</strong> {{ detal.specialization }}</div>
+            <div class="info-box"><strong>Job location:</strong> {{ detal.location }}</div>
+            <div class="info-box"><strong>Job role:</strong> {{ detal.role }}</div>
+            <div class="info-box" style="grid-column: span 2;"><strong>Address:</strong> {{ detal.adress }}</div>
+        {% endfor %}
     </div>
 
-    <script>
-        function showModal(img) {
-            var modal = document.getElementById("imgModal");
-            var modalImg = document.getElementById("modalImg");
-            modal.style.display = "block";
-            modalImg.src = img.src;
-        }
+    <div class="btn-container">
+        <a href="/edit_profile_e"><button>Edit Profile</button></a>
+        <a href="/change_password"><button>Change Password</button></a>
+        <a href="/dashboard_employee"><button>Back</button></a>
+    </div>
+</div>
 
-        // Close modal when clicking the close button
-        document.getElementById("closeBtn").onclick = function(event) {
-            document.getElementById("imgModal").style.display = "none";
-        }
-
-        // Close modal when clicking outside the image
-        document.getElementById("imgModal").onclick = function(event) {
-            if (event.target === this) {
-                this.style.display = "none";
-            }
-        }
-    </script>
 </body>
 </html>

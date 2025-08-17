@@ -1,0 +1,126 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+main {
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 16px 64px;
+}
+
+/* Heading */
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+/* Job details card */
+.job-details {
+    list-style: none;
+    padding: 0;
+}
+
+.job-details li {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.04);
+    transition: transform 0.12s ease, box-shadow 0.2s ease;
+}
+
+.job-details li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(2, 6, 23, 0.08);
+}
+
+.job-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.company {
+    font-size: 16px;
+    color: #334155;
+}
+
+.location {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.meta {
+    font-size: 14px;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+/* Apply form */
+.apply-form {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.apply-form label {
+    font-weight: 500;
+}
+
+.apply-form input[type="file"] {
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.apply-form button {
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+    transition: transform 0.05s ease-in, box-shadow 0.2s;
+}
+
+.apply-form button:hover {
+    transform: translateY(-1px);
+}
+
+/* Back button */
+.back-btn button {
+    margin-top: 10px;
+    background: #475569;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.back-btn button:hover {
+    background: #334155;
+}
+
+/* Flash message */
+.flash-message {
+    display: block;
+    margin-top: 10px;
+    color: rgb(85, 84, 105);
+    font-weight: 500;
+}

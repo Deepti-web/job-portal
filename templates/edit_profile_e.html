@@ -3,91 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profie</title>
-            <style>
-        .thumbnail {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            transition: border 0.2s;
+    <title>Edit Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f6f8;
         }
-        .thumbnail:hover {
-            border: 2px solid #333;
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.8);
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #444;
         }
-        .modal-content {
+        img.thumbnail {
             display: block;
-            margin: 5% auto;
-            max-width: 90vw;
-            max-height: 90vh;
+            margin: 0 auto 15px auto;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #ddd;
         }
-        .close {
-            position: absolute;
-            top: 20px; right: 35px;
-            color: #fff;
-            font-size: 40px;
-            font-weight: bold;
+        .btn {
+            background: #007BFF;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        form input, form textarea, form select {
+            width: 96%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        textarea {
+            resize: none;
+            grid-column: span 2;
+            height: 70px;
+        }
+        .full-width {
+            grid-column: span 2;
+        }
+        .action-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .action-buttons a {
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-        {% for photo in photos %}
-        <img src="data:image/jpeg;base64,{{ photo.image_data }}" class="thumbnail" onclick="showModal(this)"><br><br>
-        {% endfor %}
-        <a href="/edit_employee_pic"><button>Change Profile Photo</button></a><br><br>
-        <form method="POST">
-        Name: <input type="text" name="name" value="{{ user.name }}" required><br><br>
-        Email: <input type="email" name="email" value="{{ user.email }}" required><br><br>
-        Mobile: <input type="text" name="mobile" value="{{ user.mobile }}" required><br><br>
-        Date of birth: <input type="date" name="dob" value="{{ user.dob }}" required><br><br>
-        Address: <textarea name="address" required>{{ user.adress }}</textarea><br><br>
-        <p>Gender</p>
-        <select name="gender" value="{{ user.dob }}">
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="other">Other</option>
-        </select><br><br>
-        role: <input type="text" name="role" value="{{ user.role }}" required><br><br>
-        <input type="submit" value="Update Profile">
+
+<div class="container">
+    <h2>Edit Profile</h2>
+
+    {% for photo in photos %}
+        <img src="data:image/jpeg;base64,{{ photo.image_data }}" class="thumbnail" onclick="showModal(this)">
+    {% endfor %}
+
+    <a href="/edit_employee_pic"><button class="btn full-width">Change Profile Photo</button></a>
+
+    <form method="POST">
+        <input type="text" name="name" value="{{ user.name }}" placeholder="Name" required>
+        <input type="email" name="email" value="{{ user.email }}" placeholder="Email" required>
+        
+        <input type="text" name="mobile" value="{{ user.mobile }}" placeholder="Mobile" required>
+        <input type="date" name="dob" value="{{ user.dob }}" required>
+
+        <textarea name="address" placeholder="Address" required>{{ user.adress }}</textarea>
+
+        <!-- <select name="gender" required>
+            <option value="Male" {% if user.gender == "Male" %}selected{% endif %}>Male</option>
+            <option value="Female" {% if user.gender == "Female" %}selected{% endif %}>Female</option>
+            <option value="Other" {% if user.gender == "Other" %}selected{% endif %}>Other</option>
+        </select> -->
+
+        <input type="text" name="role" value="{{ user.role }}" placeholder="Job Role" required>
+        <input type="text" name="location" value="{{ user.location }}" placeholder="Job location" required>
+
+        <div class="full-width">
+            <input type="submit" value="Update Profile" class="btn" style="width: 100%;">
+        </div>
     </form>
-    </div>
-    <a href="/"></a>
-    <div id="imgModal" class="modal">
-        <span class="close" id="closeBtn">&times;</span>
-        <img class="modal-content" id="modalImg">
-    </div>
-    <script>
-        function showModal(img) {
-            var modal = document.getElementById("imgModal");
-            var modalImg = document.getElementById("modalImg");
-            modal.style.display = "block";
-            modalImg.src = img.src;
-        }
 
-        // Close modal when clicking the close button
-        document.getElementById("closeBtn").onclick = function(event) {
-            document.getElementById("imgModal").style.display = "none";
-        }
+    <div class="action-buttons">
+        <a href="/dashboard_employee"><button class="btn" style="background: #6c757d;">Back</button></a>
+        <!-- <a href="/change_password"><button class="btn" style="background: #ffc107; color: black;">Change Password</button></a> -->
+    </div>
+</div>
 
-        // Close modal when clicking outside the image
-        document.getElementById("imgModal").onclick = function(event) {
-            if (event.target === this) {
-                this.style.display = "none";
-            }
-        }
-    </script>
 </body>
 </html>

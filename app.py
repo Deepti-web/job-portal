@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for,flash
+from flask import Flask, render_template, request, redirect, session, url_for,flash,send_file, make_response
 from flask_mysqldb import MySQL
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -8,10 +8,17 @@ import random
 import base64
 import time
 import requests
+import secrets
+import io
+from openpyxl import Workbook
+import MySQLdb.cursors
+from captcha.image import ImageCaptcha
 
 
 app = Flask(__name__)
 app.secret_key = "jobportal123"
+
+
 
 def send_email(subject, body, receiver_email):
     sender_email = "deeptilapy@gmail.com"
@@ -56,6 +63,17 @@ mysql = MySQL(app)
 real_datetime = datetime.datetime.now()
 current_date = real_datetime.strftime("%d-%m-%Y")
 current_time = real_datetime.strftime("%H:%M")
+
+def check_employee():
+    email_list = []
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT email FROM employees")
+    emails = cur.fetchall()
+    for row in emails:
+        email_list.append(row["email"])
+    cur.close()
+    return email_list
+print(check_employee)
 # Home
 @app.route("/")
 def index():
@@ -68,7 +86,22 @@ def auth():
 # Company Signup/Login
 @app.route("/signup_company", methods=["GET", "POST"])
 def signup_company():
-    if request.method == "POST":
+    if request.method == "GET":
+        error = None
+        num = secrets.randbelow(900000) + 100000
+        img = ImageCaptcha(width=280, height=90)
+        captcha_num = str(num)
+        img.write(captcha_num, 'static/captcha/r_c_captcha.png')
+        session['captcha_num'] = captcha_num  # ✅ store in session
+        print(captcha_num)
+        return render_template("signup_company.html")
+    if request.method == 'POST':
+        inputnum = request.form["captcha"]
+        if inputnum != session.get("captcha_num"):
+            print("! Incorrect captch")
+            flash("!Incorrect cptchacode")
+            return redirect("/signup_company")
+        print("captcha match")
         name = request.form["name"]
         email = request.form["email"]
         mobile_num = request.form["mobile"]
@@ -92,9 +125,11 @@ def signup_company():
         result = cur.fetchone()
         cur.close()
         if result:
-            return "The email is already taken"
+            session.pop("captcha_num", None)
+            error = "Email   already taken"
         else:
-            otp = str(random.randint(100000, 999999))
+            otp = str(secrets.randbelow(900000) + 100000)
+            session["otpp"] = otp
             session['temp_company'] = {'name': name,
                                     'email': email,
                                     'otp': otp,
@@ -121,10 +156,12 @@ def signup_company():
                     """
             send_email(subject, body, receiver_email)
             return redirect('/verify_c')
-    return render_template("signup_company.html")
+    return render_template("signup_company.html", error = error)
 
 @app.route('/verify_c', methods=['GET', 'POST'])
 def verify_c():
+    if "otpp" not in session:
+        return redirect("/auth")
     if request.method == 'POST':
         entered_otp = request.form['otp']
         if 'temp_company' in session and entered_otp == session['temp_company']['otp']:
@@ -134,6 +171,8 @@ def verify_c():
 
 @app.route('/set-password_c', methods=['GET', 'POST'])
 def set_password_c():
+    if "otpp" not in session:
+        return redirect("/auth")
     if request.method == 'POST':
         pwd = request.form['pass']
         confirm = request.form['password']
@@ -155,7 +194,19 @@ def set_password_c():
 
 @app.route("/login_company", methods=["GET", "POST"])
 def login_company():
+    if request.method == "GET":
+        num = random.randrange(100000, 999999)
+        img = ImageCaptcha(width=280, height=90)
+        captcha_num = str(num)
+        img.write(captcha_num, 'static/captcha/captcha.png')
+        session['captcha_num'] = captcha_num  # ✅ store in session
+        return render_template("login_company.html")
+        
     if request.method == "POST":
+        inputnum = request.form["captcha"]
+        if inputnum != session.get("captcha_num"):
+            flash("invalid captcha")
+            return redirect("/login_company")
         email = request.form["email"]
         password = request.form["password"]
         cur = mysql.connection.cursor()
@@ -163,6 +214,7 @@ def login_company():
         company = cur.fetchone()
         cur.close()
         if company:
+            session.pop("captcha_num", None)
             session["company_id"] = company["id"]
             session["company_name"] = company["name"]
             session["company_email"] = company["email"]
@@ -195,7 +247,9 @@ def login_company():
             mysql.connection.commit()
             cur.close()
             return redirect("/hbddrtye-dc")
-        return render_template("login_company.html", error="Invalid email or password")
+        flash("Invalid email or password")
+        return redirect("/login_company")
+        # return render_template("login_company.html", error="")
     return render_template("login_company.html")
 
 
@@ -223,7 +277,7 @@ def dashboard_company():
     if "company_id" not in session:
         return redirect("/login_company")
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM jobs WHERE company_id=%s", (session["company_id"],))
+    cur.execute("SELECT * FROM jobs WHERE company_id=%s AND status=%s", (session["company_id"],"Running"))
     jobs = cur.fetchall()
     return render_template("dashboard_company.html", jobs=jobs)   #applications=applications
 
@@ -351,7 +405,7 @@ def forgate_password_c():
 
         if action == "send":
             # ✅ Send OTP
-            otp = str(random.randint(100000, 999999))
+            otp = str(secrets.randbelow(900000) + 100000)
             session["otp"] = otp
             receiver_email = session["company_email"]
             subject = "!important"
@@ -406,67 +460,84 @@ def forgate_password_by_email_c():
     action = request.form.get('action')
     if action == 'send':
         gmail = request.form["email"]
-        email_list=[]
         cur = mysql.connection.cursor()
         cur.execute("SELECT email FROM companies")
-        emails = cur.fetchall()
-        for email in emails:
-            email_list.append(email['email'])
-        print(email_list)
+        email_list = [row['email'] for row in cur.fetchall()]
+        cur.close()
         if gmail in email_list:
             session["c_gmail"] = gmail
-            otp = str(random.randint(100000, 999999))
+            otp = str(secrets.randbelow(900000) + 100000)
             session["otp"] = otp
             receiver_email = gmail
-            subject ="!important"
+            subject = "!important"
             body = f"""
-                    <html>
-                    <body>
-                        <p style="color: #000000; font-size: 20px;">Hello</p>
-                        <p style="color: #000000; font-size: 15px;">your otp for change password</p><br>
-                        <p style="color: #000000; font-size: 23px;"><b>{otp}<b></p><br>
-                    </body>
-                    </html>
-                    """
+                <html>
+                <body>
+                    <p style="color: #000000; font-size: 20px;">Hello</p>
+                    <p style="color: #000000; font-size: 15px;">Your OTP for changing password</p><br>
+                    <p style="color: #000000; font-size: 23px;"><b>{otp}</b></p><br>
+                </body>
+                </html>
+            """
             send_email(subject, body, receiver_email)
+            flash("OTP sent to your email!", "success")
         else:
-            flash("Email not exist", "danger")
-    if action == 'verify':
+            flash("Email does not exist", "danger")
+
+    elif action == 'verify':
         otp_input = request.form["otp"]
-        if otp_input ==  session["otp"]:
-            session.pop('otp', None)
-            time.sleep(2)
+        if otp_input == session.get("otp"):
+            # session["c_gmail"] = gmail
+            session["otp_verified"] = True  # Flag for verified OTP
+            session.pop("otp", None)  # Remove OTP from session
             return redirect("/new_password_email_c")
         else:
             flash("Invalid OTP", "danger")
+
     return render_template("verify_otp_by_email_c.html")
 
 
 @app.route("/new_password_email_c", methods=["GET", "POST"])
 def new_password_email_c():
-    if "c_gmail" not in session:
+    # Only allow if email is set AND OTP verified
+    if "c_gmail" not in session or not session.get("otp_verified"):
         return redirect("/login_company")
     if request.method == "POST":
         new1 = request.form["newpass1"]
         new = request.form["newpass"]
         if new1 == new:
             cur = mysql.connection.cursor()
-            cur.execute("UPDATE companies SET password=%s WHERE email=%s",(new1, session["c_gmail"]))
+            cur.execute("UPDATE companies SET password=%s WHERE email=%s",
+                        (new1, session["c_gmail"]))
             mysql.connection.commit()
             cur.close()
-            session.pop('otp', None)
-            flash("Sucess!  Passwod changed!", "sucess")
-            time.sleep(3)
+            # Clear session flags
+            session.pop('otp_verified', None)
+            session.pop('c_gmail', None)
+            flash("Success! Password changed!", "success")
             return redirect("/login_company")
         else:
-            flash("Error! Password Does not match!", "warning")
+            flash("Error! Passwords do not match!", "warning")
     return render_template("new_password.html")
+
 
 
 # Employee Signup/Login
 @app.route('/signup_employee', methods=['GET', 'POST'])
 def register():
+    if request.method == "GET":
+        num = random.randrange(100000, 999999)
+        img = ImageCaptcha(width=280, height=90)
+        captcha_num = str(num)
+        img.write(captcha_num, 'static/captcha/r_e_captcha.png')
+        session['captcha_num'] = captcha_num  # ✅ store in session
+        return render_template("signup_employee.html")
     if request.method == 'POST':
+        inputnum = request.form["captcha"]
+        if inputnum != session.get("captcha_num"):
+            flash("!Incorrect cptchacode")
+            return redirect("/signup_employee")
+        print("captcha match")
         name = request.form.get('name')
         email = request.form.get('email')
         mobile = request.form.get('mobile')
@@ -482,15 +553,14 @@ def register():
         specialization = request.form.get('specialization')
         role = request.form.get('role')
         location = request.form.get('location')
-
         cur = mysql.connection.cursor()
         cur.execute("SELECT 1 FROM employees WHERE email = %s LIMIT 1", (email,))
         result = cur.fetchone()
         cur.close()
         if result:
-            return "The email is already taken"
-        
-        otp = str(random.randint(100000, 999999))
+            return("email already taken")
+        otp = str(secrets.randbelow(900000) + 100000)
+        session["ootp"] = otp
         session['temp_user'] = {'name': name,
                                 'email': email,
                                 'otp': otp,
@@ -523,6 +593,8 @@ def register():
 # Step 2: Verify OTP
 @app.route('/verify', methods=['GET', 'POST'])
 def verify():
+    if "ootp" not in session:
+        return redirect("/auth")
     if request.method == 'POST':
         entered_otp = request.form['otp']
         if 'temp_user' in session and entered_otp == session['temp_user']['otp']:
@@ -534,18 +606,21 @@ def verify():
 # Step 3: Set Password
 @app.route('/set-password', methods=['GET', 'POST'])
 def set_password():
+    if "ootp" not in session:
+        return redirect("/auth")
     if request.method == 'POST':
         pwd = request.form['pass']
         confirm = request.form['password']
         if pwd == confirm:
-            image = None
             cur = mysql.connection.cursor()
             data = session['temp_user']
             cur.execute("INSERT INTO employees (name, email, password, role, mobile, dob, gender, adress, qualification," \
-                        "graduation,specialization, location, registration_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                        "graduation,specialization, location, registration_date, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                         (data['name'], data['email'], pwd,  data['role'], data['mobile'], data['dob'], data['gender'],
-                            data['adress'], data['qualification'], data['graduation'], data['specialization'], data['location'], current_date))
+                            data['adress'], data['qualification'], data['graduation'], data['specialization'], data['location'], current_date,"Unblock"))
+            cur.execute("INSERT INTO login_atmp (email,login_atmp) VALUES (%s, %s)",(data['email'],0))
             mysql.connection.commit()
+            session.pop('ootp')
             session.pop('temp_user')
             return redirect('/success')
         return render_template('set_password.html', error="Passwords do not match.")
@@ -561,7 +636,33 @@ def success():
 
 @app.route("/login_employee", methods=["GET", "POST"])
 def login_employee():
+    error = None
+    if request.method == "GET":
+        num = random.randrange(100000, 999999)
+        img = ImageCaptcha(width=280, height=90)
+        captcha_num = str(num)
+        img.write(captcha_num, 'static/captcha/captcha_e.png')
+        session['captcha_num'] = captcha_num  # ✅ store in session
+        return render_template("login_employee.html")
+        
     if request.method == "POST":
+        email = request.form["email"]
+        email_list = check_employee()
+        if email not in email_list:
+            flash("❌Don't have an account")
+            return redirect("/login_employee")
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT login_atmp FROM login_atmp WHERE email=%s",(email,))
+        log_atmp = cur.fetchone()
+        cur.close()
+        if log_atmp["login_atmp"] >= 3:
+            session.pop("captcha_num", None)
+            return "you reached maximum login attempt"
+        inputnum = request.form["captcha"]
+        if inputnum != session.get("captcha_num"):
+            flash("invalid captcha")
+            session.pop("captcha_num", None)
+            return redirect("/login_employee")
         email = request.form["email"]
         password = request.form["password"]
         cur = mysql.connection.cursor()
@@ -572,14 +673,16 @@ def login_employee():
             session["employee_id"] = employee["id"]
             session["employee_email"] = employee["email"]
             session["employee_name"] = employee["name"]
-            
+            cur = mysql.connection.cursor()
+            cur.execute("UPDATE login_atmp  SET login_atmp=%s WHERE email=%s",(0,session["employee_email"]))
+            mysql.connection.commit()
+            cur.close()
             if not employee["image"]:  # Assuming 'image' is your longblob column
                 return redirect("/employee_pic")
-            
             if employee["status"] == "Block":
                 session.clear()
                 return "<h1>❌ your account is Blocked ❌</h1>"
-            flash("please Wait...")
+            flash("✅ Login successful. Redirecting...")
             location = login_location()
             receiver_email = session["employee_email"]
             subject ="!important"
@@ -600,10 +703,18 @@ def login_employee():
             cur.execute("UPDATE employees SET login_info=%s WHERE id=%s",(login_info, session["employee_id"]))
             mysql.connection.commit()
             cur.close()
-            send_email(subject, body, receiver_email)
             return redirect("/dashboard_employee")
-        return render_template("login_employee.html", error="Invalid email or password")
-    return render_template("login_employee.html")
+        if not employee:
+            cur = mysql.connection.cursor()
+            cur.execute("UPDATE login_atmp SET login_atmp = login_atmp+1 WHERE email=%s",(email,))
+            cur.execute("SELECT login_atmp FROM login_atmp WHERE email=%s",(email,))
+            log_atm = cur.fetchone()
+            mysql.connection.commit()
+            cur.close()
+            msh = f"❌Invalid email or password \n You have total 3 attempts and you used {log_atm['login_atmp']} attempts"
+            flash(msh)
+            return redirect("/login_employee")
+    return render_template("login_employee.html",error=error)
 
 @app.route("/employee_pic", methods=["GET", "POST"])
 def profile_pic():
@@ -643,7 +754,7 @@ def change_password():
 
 @app.route("/forgate_password_e", methods=["GET", "POST"])
 def forgate_password():
-    if "employee_id"  and "employee_email" not in session: #gggh
+    if "employee_id" not in session or "employee_email" not in session:
         return redirect("/login_employee")
     
     if request.method == "POST":
@@ -651,7 +762,7 @@ def forgate_password():
 
         if action == "send":
             # ✅ Send OTP
-            otp = str(random.randint(100000, 999999))
+            otp = str(secrets.randbelow(900000) + 100000)
             session["otp"] = otp
             receiver_email = session["employee_email"]
             subject = "!important"
@@ -666,16 +777,19 @@ def forgate_password():
             """
             send_email(subject, body, receiver_email)
             flash("OTP has been sent to your email.")
+
         elif action == "check":
-            # ✅ Check OTP
             inotp = request.form.get("otp")
-            if session.get("otp") == inotp:
-                # session.pop("otp", None)
+            if not inotp:
+                flash("Please enter OTP.")
+            elif session.get("otp") == inotp:
                 return redirect("/new_password_e")
             else:
-                flash("Incorrect otp")
-                # error = "Incorrect OTP"
+                flash("Incorrect OTP")
+
     return render_template("verify_otp_c&e_in prof.html")
+
+
 
 @app.route("/new_password_e", methods=["GET", "POST"])
 def new_password_e():
@@ -711,8 +825,8 @@ def forgate_password_by_email_e():
             email_list.append(email['email'])
         print(email_list)
         if gmail in email_list:
-            session["gmail"] = gmail
-            otp = str(random.randint(100000, 999999))
+            session["e_gmail"] = gmail
+            otp = str(secrets.randbelow(900000) + 100000)
             session["otp"] = otp
             receiver_email = gmail
             subject ="!important"
@@ -726,13 +840,16 @@ def forgate_password_by_email_e():
                     </html>
                     """
             send_email(subject, body, receiver_email)
+            flash("OTP sent to your email!", "success")
         else:
             flash("Email not exist", "danger")
     if action == 'verify':
         otp_input = request.form["otp"]
-        if otp_input ==  session["otp"]:
+        if otp_input ==  session.get("otp"):
+            # session["e_gmail"] = gmail
+            session["otp_verified"] = True
             session.pop('otp', None)
-            time.sleep(2)
+            time.sleep(1)
             return redirect("/new_password_email_e")
         else:
             flash("Invalid OTP", "danger")
@@ -741,17 +858,19 @@ def forgate_password_by_email_e():
 
 @app.route("/new_password_email_e", methods=["GET", "POST"])
 def new_password_email_e():
-    if "gmail" not in session:
+    if "e_gmail" not in session or not session.get("otp_verified"):
         return redirect("/login_employee")
+    
     if request.method == "POST":
         new1 = request.form["newpass1"]
         new = request.form["newpass"]
         if new1 == new:
             cur = mysql.connection.cursor()
-            cur.execute("UPDATE employees SET password=%s WHERE email=%s",(new1, session["gmail"]))
+            cur.execute("UPDATE employees SET password=%s WHERE email=%s",(new1, session["e_gmail"]))
             mysql.connection.commit()
             cur.close()
             session.pop('otp', None)
+            session.pop('e_gmail', None)
             flash("Sucess!  Passwod changed!", "sucess")
             time.sleep(3)
             return redirect("/login_employee")
@@ -766,10 +885,43 @@ def dashboard_employee():
     if "employee_id" not in session:
         return redirect("/login_employee")
     cur = mysql.connection.cursor()
-    cur.execute("SELECT jobs.*, companies.name AS company_name FROM jobs JOIN companies ON jobs.company_id = companies.id")
+    cur.execute("SELECT * FROM jobs WHERE status=%s",("Running",))
     jobs = cur.fetchall()
     cur.close()
     return render_template("dashboard_employee.html", jobs=jobs)
+
+@app.route("/job_search", methods=["GET", "POST"])
+def job_search():
+    if "employee_id" not in session:
+        return redirect("/login_employee")
+    results = []
+    if request.method == "POST":
+        keyword = request.form["keyword"]
+        cur = mysql.connection.cursor()
+        query = """
+        SELECT title, company_name, salary, id, company_id, job_type
+        FROM jobs
+        WHERE (
+            title LIKE %s OR
+            job_role LIKE %s OR
+            job_type LIKE %s OR
+            location LIKE %s OR
+            work_Arrangement LIKE %s OR
+            employment_Type LIKE %s OR
+            profesion LIKE %s OR
+            company_name LIKE %s
+        )
+        AND status=%s
+        """
+
+        cur.execute(query, (
+            f"%{keyword}%", f"%{keyword}%", f"%{keyword}%", f"%{keyword}%",
+            f"%{keyword}%", f"%{keyword}%", f"%{keyword}%", f"%{keyword}%",
+            "Running"
+        ))
+        results = cur.fetchall()
+        cur.close()
+    return render_template("job_search.html", results=results)
 
 @app.route("/dashboard_employee/profile")
 def emp_profile():
@@ -811,11 +963,12 @@ def edit_profile_e():
         mobile = request.form['mobile']
         dob = request.form['dob']
         address = request.form['address']
-        gender = request.form['gender']
+        # gender = request.form['gender']
+        location = request.form['location']
 
         cur = mysql.connection.cursor()
-        cur.execute("UPDATE employees SET name = %s, email = %s, role = %s, mobile = %s, dob=%s, gender=%s, adress = %s WHERE id = %s ",
-                    (name, email, role, mobile, dob, gender, address, session["employee_id"]))
+        cur.execute("UPDATE employees SET name = %s, email = %s, role = %s, mobile = %s, dob=%s, adress = %s, location = %s WHERE id = %s ",
+                    (name, email, role, mobile, dob, address, location, session["employee_id"]))
         mysql.connection.commit()
         cur.close()
         return render_template("sucessfull_update_e.html")
@@ -832,9 +985,6 @@ def edit_profile_e():
 def edit_profile_pic_e():
     if "employee_id" not in session:
         return redirect("/login_employee")
-    
-    photo_list = []  # ✅ Always define it
-    
     if request.method == "POST":
         file = request.files.get('photo')
         if file and file.filename != '':
@@ -847,17 +997,7 @@ def edit_profile_pic_e():
             # photo_list.append({'image_data': b64_image})
             time.sleep(2)
             return redirect("/edit_profile_e")
-    # On GET, fetch the current photo to show
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT image FROM employees WHERE id=%s", (session["employee_id"],))
-    photo = cur.fetchone()
-    cur.close()
-    if photo and photo["image"]:
-        image_blob = photo["image"]
-        b64_image = base64.b64encode(image_blob).decode('utf-8')
-        photo_list.append({'image_data': b64_image})
-
-    return render_template("get_profile_pic.html", photos=photo_list)
+    return render_template("get_profile_pic.html")
 
 
 
@@ -931,23 +1071,24 @@ def apply(job_id, job_title, comp_id):
 
 @app.route("/removehsspx/<int:job_id>")
 def remove(job_id):
-    print(job_id)
     if "company_id" in session:
         cur = mysql.connection.cursor()
-        cur.execute("DELETE FROM jobs WHERE id = %s AND company_id = %s",
-                    (job_id, session["company_id"]))
+        Delete =  f"Delete({current_date})"
+        cur.execute("UPDATE jobs SET status=%s WHERE id=%s AND company_id=%s",(Delete, job_id, session["company_id"]))
         mysql.connection.commit()
         cur.close()
     return redirect("/hbddrtye-dc")
 
 
-@app.route("/company_ap")
-def company_ap():
+@app.route("/company_ap/<int:job_id>")
+def view_jobs_application(job_id):
     if "company_id" not in session:
         return redirect("/login_company")
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM applications WHERE job_id IN (SELECT id FROM jobs WHERE company_id=%s)", (session["company_id"],))
+    cur.execute("SELECT * FROM applications WHERE job_id=%s AND comp_id=%s ", (job_id, session["company_id"],))
     applications = cur.fetchall()
+    cur.execute("SELECT title FROM jobs WHERE id=%s",(job_id,))
+    j_title = cur.fetchone()
     cur.close()
     # Add base64 image data to each application
     for app in applications:
@@ -957,15 +1098,14 @@ def company_ap():
             app["resume_base64"] = b64_image
         else:
             app["resume_base64"] = None
-
-    return render_template("company_ap.html", applications=applications)
+    return render_template("company_ap.html", applications=applications, j_title = j_title["title"])
 
 @app.route("/aprove/<string:job_title>/<string:employee_email>/<string:employee_name>/<int:job_id>/<int:employee_id>")
 def aprove(job_title, employee_email, employee_name, job_id, employee_id):
     if "company_id" not in session:
         return redirect("/login_company")
     print("Received employee email:", employee_email)
-    by = f"by:-{session["company_name"]}/n{current_date}"
+    by = f"by:-{session["company_name"]}\n{current_date}"
     receiver_email = employee_email
     subject ="congraculation"
     body = f"""
@@ -981,8 +1121,8 @@ def aprove(job_title, employee_email, employee_name, job_id, employee_id):
     send_email(subject, body, receiver_email)
     print("Email sent successfully!")
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO aproved (company_id, title, job_id, employee_name, employee_email) VALUES (%s, %s, %s, %s, %s)",
-                (session["company_id"], job_title, job_id,employee_name,employee_email))
+    cur.execute("INSERT INTO aproved (company_id, title, job_id, employee_name, employee_email, aprove_date) VALUES (%s, %s, %s, %s, %s, %s)",
+                (session["company_id"], job_title, job_id,employee_name,employee_email, current_date))
     
     cur.execute('UPDATE status SET status = %s WHERE job_id=%s AND employee_id=%s AND company_id=%s',
         ("✅Aprover", job_id, employee_id, session["company_id"]))
@@ -995,27 +1135,39 @@ def aprove(job_title, employee_email, employee_name, job_id, employee_id):
     mysql.connection.commit()
     cur.close()
     print(employee_id)
-    return redirect("/company_ap")
-    return render_template("company_ap.html")
+    # return redirect("/company_ap/<int:job_id>")
+    return redirect("/company_ap/{}".format(job_id))
 
 
 @app.route("/remove_ap/<int:job_id>/<int:employee_id>")
 def remove_ap(job_id, employee_id):
-    if "company_id" in session:
-        cur = mysql.connection.cursor()
-        cur.execute('UPDATE status SET status = %s WHERE job_id=%s AND employee_id=%s AND company_id=%s',
-        ("❌Rejected", job_id, employee_id, session["company_id"]))
-        
-        cur.execute(
-        "UPDATE status SET activity_date = %s WHERE employee_id=%s AND company_id=%s AND job_id=%s",
-        (current_date, employee_id, session["company_id"], job_id))
+    if "company_id" not in session:
+        return redirect("/login_company")
+    cur = mysql.connection.cursor()
+    cur.execute('UPDATE status SET status = %s WHERE job_id=%s AND employee_id=%s AND company_id=%s',
+    ("❌Rejected", job_id, employee_id, session["company_id"]))
+    c_date = f"({current_date})"
+    print(c_date)
+    cur.execute(
+    "UPDATE status SET activity_date = %s WHERE employee_id=%s AND company_id=%s AND job_id=%s",
+    (c_date, employee_id, session["company_id"], job_id))
 
-        cur.execute("DELETE FROM applications WHERE job_id=%s AND employee_id=%s AND comp_id=%s", (job_id, employee_id, session["company_id"]))
-        mysql.connection.commit()
-        cur.close()
-        return redirect("/company_ap")
-    return render_template("company_ap.html")
+    cur.execute("DELETE FROM applications WHERE job_id=%s AND employee_id=%s AND comp_id=%s", (job_id, employee_id, session["company_id"]))
+    mysql.connection.commit()
+    cur.close()
+    return redirect("/company_ap/{}".format(job_id))
 
+
+@app.route("/Job/details/<int:job_id>")
+def view_posted_job_detais(job_id):
+    if "company_id" not in session:
+        return redirect("/login_company")
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM jobs WHERE id=%s AND company_id=%s",(job_id, session["company_id"]))
+    details=cur.fetchone()
+    cur.close()
+    return render_template("job_details.html", details=details)
+    
 
 
 
@@ -1031,6 +1183,45 @@ def aproved_clint():
     cur.close()
     return render_template("aproved_clint.html",applications = applications) # , applications=applications
 
+
+@app.route('/download_employees_excel')
+def download_aproved_employees_excel():
+    if "company_id" not in session:
+        return redirect("/")
+    # Create dict-style cursor
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Fetch the specific fields you want
+    cur.execute("SELECT title, employee_email, employee_name FROM aproved WHERE company_id=%s",(session["company_id"],))
+    employees = cur.fetchall()
+
+    if not employees:
+        return "No employee data found", 404
+
+    # Create Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Employees List"
+
+    # Add header row
+    ws.append(["Job Title", "Email", "Employee Name"])
+
+    # Add data rows
+    for emp in employees:
+        ws.append([emp['title'], emp['employee_email'], emp['employee_name']])
+
+    # Save Excel to memory
+    excel_stream = io.BytesIO()
+    wb.save(excel_stream)
+    excel_stream.seek(0)
+
+    # Send the file
+    return send_file(
+        excel_stream,
+        as_attachment=True,
+        download_name=f"aproved_employees_{current_date}_list.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 # Application status
 @app.route("/status")
@@ -1070,10 +1261,12 @@ def company_post_job():
         lastdate = request.form["date"]
         description = request.form["description"]
         # print(type(lastdate))
-        cur.execute("INSERT INTO jobs (company_id, title, description, job_role, job_type, country, state, city, pin, work_Arrangement, salary, employment_Type, profesion, experience, comp_skil, lastdate, company_name) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                    (session["company_id"], title, description, jobrole, job_type, country, state, city, pin, work_Arrangement, salary, employment_Type, profesion,
-                    experience, compskil, lastdate, session["company_name"]))
+        cur.execute("INSERT INTO jobs (company_id, title, description, job_role, job_type, work_Arrangement, salary, employment_Type, profesion, experience, comp_skil, lastdate, company_name, post_dt, status, location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (session["company_id"], title, description, jobrole, job_type, work_Arrangement, salary, employment_Type, profesion,
+                    experience, compskil, lastdate, session["company_name"], current_date,"Running", location))
         mysql.connection.commit()
+        cur.close()
+        return "✅ Job post successful <a href=\"/hbddrtye-dc\"><button>Back</button></a>"
     return render_template("company_p_job.html",)
 
 # Logout
@@ -1108,11 +1301,14 @@ def admin_dashboard():
     cur.execute("SELECT COUNT(*) AS total FROM companies")
     t_company = cur.fetchone()["total"]
 
-    cur.execute("SELECT COUNT(*) AS total_a FROM companies WHERE status=%s",("aproved",))
+    cur.execute("SELECT COUNT(*) AS total_a FROM companies WHERE status=%s OR status=%s",("unblock", "aproved"))
     t_a_company = cur.fetchone()["total_a"]
 
     cur.execute("SELECT COUNT(*) AS total_un_a FROM companies WHERE status=%s",("pending",))
     t_un_a_company = cur.fetchone()["total_un_a"]
+
+    cur.execute("SELECT COUNT(*) AS t_block FROM companies WHERE status=%s",("Block",))
+    t_b_company = cur.fetchone()["t_block"]
 
     cur.execute("SELECT COUNT(*) AS total_e FROM employees")
     total_e = cur.fetchone()["total_e"]
@@ -1120,11 +1316,11 @@ def admin_dashboard():
     cur.execute("SELECT COUNT(*) AS total_a FROM applications")
     total_a = cur.fetchone()["total_a"]
 
-    cur.execute("SELECT COUNT(*) AS total_j FROM jobs")
+    cur.execute("SELECT COUNT(*) AS total_j FROM jobs WHERE status=%s",("Running",))
     total_j = cur.fetchone()["total_j"]
     cur.close()
     return render_template("admin_dashboard.html", t_company=t_company, t_a_company=t_a_company, t_un_a_company=t_un_a_company, total_e=total_e,
-                            total_a=total_a, total_j=total_j)
+                            total_a=total_a, total_j=total_j, t_b_company=t_b_company)
 
 @app.route("/2300/admin_dashboard/new_company")
 def admin_dashboard_new_companyes():
@@ -1136,32 +1332,77 @@ def admin_dashboard_new_companyes():
     cur.close()
     return render_template("a_pending_company.html", companyes = company)
 
-@app.route("/2300/admin_dashboard/companyes")
+@app.route("/2300/admin_dashboard/companyes", methods=["GET"])
 def admin_total_company():
-    if "a_id"  not in session:
-            return redirect("/")
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM companies WHERE status IN (%s, %s, %s)", ("aproved", "Block", "Unblock"))
-    companyes = cur.fetchall()
-    cur.close()
-    return render_template("a_total_company.html", companyes = companyes)
+    if "a_id" not in session:
+        return redirect("/")
 
-@app.route("/2300/admin_dashboard/seeker")
+    q = (request.args.get("q") or "").strip()
+
+    # DictCursor lets you use keys in Jinja: company['name'], etc.
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if q:
+        like = f"%{q}%"
+        query = """
+            SELECT *
+            FROM companies
+            WHERE
+                name LIKE %s
+                OR email LIKE %s
+                OR status LIKE %s
+                OR industry_type LIKE %s
+                OR company_type LIKE %s
+                OR gst LIKE %s
+        """
+        cur.execute(query, (like, like, like, like, like, like))
+    else:
+        cur.execute(
+            "SELECT * FROM companies WHERE status IN (%s, %s, %s)",
+            ("approved", "Block", "UnBlock")
+        )
+
+    companies = cur.fetchall()
+    cur.close()
+
+
+
+    return render_template("a_total_company.html",
+                            companyes=companies,
+                            search_query=q)
+
+@app.route("/2300/admin_dashboard/seeker", methods=["GET"])
 def admin_total_employee():
-    if "a_id"  not in session:
-            return redirect("/")
+    if "a_id" not in session:
+        return redirect("/")
+
+    search_query = request.args.get("q")  # from search box
+
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM employees")
+
+    if search_query:
+        cur.execute("""
+            SELECT * FROM employees
+            WHERE name LIKE %s OR email LIKE %s OR status = %s
+        """, (f"%{search_query}%", f"%{search_query}%", f"%{search_query}%"))
+    else:
+        cur.execute("SELECT * FROM employees")
+
     employees = cur.fetchall()
     cur.close()
-    for image in employees:
-        if image.get("image"):
-            image_blob = image["image"]
-            b64_image = base64.b64encode(image_blob).decode('utf-8')
-            image["resume_base64"] = b64_image
+
+    # Convert images to base64
+    for emp in employees:
+        if emp.get("image"):
+            image_blob = emp["image"]
+            emp["resume_base64"] = base64.b64encode(image_blob).decode("utf-8")
         else:
-            image["resume_base64"] = None
-    return render_template("a_total_employee.html", employees = employees)
+            emp["resume_base64"] = None
+
+    return render_template("a_total_employee.html",
+                            employees=employees,
+                            search_query=search_query)
+
 
 @app.route("/2300/admin_dashboard/applications")
 def admin_total_applications():
@@ -1178,7 +1419,7 @@ def admin_all_jobs():
     if "a_id" not in session:
         return redirect("/")
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM jobs")
+    cur.execute("SELECT * FROM jobs WHERE status=%s",("Running",))
     jobs = cur.fetchall()
     cur.close()
     return render_template("a_jobs.html", jobs = jobs)
@@ -1311,7 +1552,7 @@ def a_b_unb_company():
 def a_view_e_details(emp_id):
     if "a_id" not in session:
         return redirect("/auth")
-    cur = mysql.connection.cursor()
+    print(emp_id)
     cur = mysql.connection.cursor()
     cur.execute("SELECT image FROM employees WHERE id=%s",(emp_id,))
     photo = cur.fetchone()
@@ -1324,12 +1565,70 @@ def a_view_e_details(emp_id):
     cur.execute("SELECT * FROM employees WHERE id=%s",(emp_id,))
     user = cur.fetchone()
     
-    cur.execute("SELECT * FROM status WHERE id=%s",(emp_id,))
-    status = cur.fetchone()
+    cur.execute("SELECT * FROM status WHERE employee_id=%s",(emp_id,))
+    status = cur.fetchall()
 
-    cur.execute("SELECT * FROM applications WHERE id=%s",(emp_id,))
-    applications = cur.fetchone()
-    return render_template("a_view_e_details.html", photos = photo_list, user=user, status=status, appliation = applications)
+    cur.execute("SELECT * FROM applications WHERE employee_id=%s",(emp_id,))
+    applications = cur.fetchall()
+    cur.close()
+    print(applications,"hii")
+    print(status)
+    return render_template("a_view_e_details.html", photos = photo_list, employee=user, statuses=status, application = applications)
+
+
+@app.route('/download_seeker/<int:emp_id>')
+def download_user(emp_id):
+    if "a_id" not in session:
+        return redirect("/")
+
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    # Fetch user data from the database
+    cur.execute("SELECT name, email, mobile FROM employees WHERE id = %s", (emp_id,))
+    user = cur.fetchone()
+
+    # If user doesn't exist
+    if not user:
+        return f"No user found for ID {emp_id}", 404
+
+    # Create an in-memory Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Employee Details"
+
+    # Write headers
+    ws.append(["Name", "Email", "Mobile"])
+
+
+    ws.append([user['name'], user['email'], user['mobile']])
+
+    excel_file = io.BytesIO()
+    wb.save(excel_file)
+    excel_file.seek(0)
+
+    return send_file(
+        excel_file,
+        as_attachment=True,
+        download_name=f"user_{emp_id}_details.xlsx",
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
+@app.route("/admin_dashboard/all_company/details/<int:cmp_id>")
+def a_view_c_details(cmp_id):
+    if "a_id" not in session:
+        return redirect("/auth")
+    print(cmp_id)
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM companies WHERE id=%s",(cmp_id,))
+    user = cur.fetchone()
+    
+    cur.execute("SELECT * FROM jobs WHERE company_id=%s",(cmp_id,))
+    jobs = cur.fetchall()
+    cur.close()
+    return render_template("a_view_c_details.html", user=user, jobs=jobs)
+
+
+
 
 
 if __name__ == "__main__":

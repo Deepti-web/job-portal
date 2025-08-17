@@ -3,17 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application status</title>
+    <title>Application Status</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/application_status.css') }}">
 </head>
 <body>
-    <h1>Application status</h1>
+    <main>
+        <h1>Application Status</h1>
+        <ul class="status-list">
             {% for st in status %}
-            <li>
-                <strong>{{ st.job_title }}</strong>||Apply date - <strong>{{ st.apply_date }}</strong> <br>
-                <p><span>{{ st.company_name }}</span></p>
-                        <p><span>{{ st.status }}</span> <span>({{ st.activity_date }})</span></p>
-            </li><br>
+                <li>
+                    <strong class="job-title">{{ st.job_title }}</strong>
+                    <span class="apply-date">Applied: {{ st.apply_date }}</span>
+                    <p class="company">{{ st.company_name }}</p>
+                    <p class="status">
+                        Status: <span class="status-badge">{{ st.status }}</span>
+                        <span class="status-date">{{ st.activity_date }}</span>
+                    </p>
+                </li>
+            {% else %}
+                <p>No applications found.</p>
             {% endfor %}
-    </ul>
+        </ul>
+    </main>
 </body>
 </html>

@@ -44,7 +44,7 @@
     </style>
 </head>
 <body>
-    <h3>Applications Received</h3>
+    <h3>Applications Received in {{ j_title }}</h3>
 <ul>
     {% for app in applications %}
         <li>
@@ -55,7 +55,6 @@
             Job title: {{ app.job_title }} ||
             Email: {{ app.employee_email }} ||
             Employee name: {{ app.employee_name }}<br>
-
             <a href="{{ url_for('aprove', job_title=app.job_title, employee_email=app.employee_email, employee_name=app.employee_name, job_id=app.job_id, employee_id=app.employee_id) }}">
                 <button type="button">Approve</button>
             </a>

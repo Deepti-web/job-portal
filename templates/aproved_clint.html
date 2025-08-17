@@ -12,5 +12,11 @@
             <li>Job title:- {{ app.title}} || Email:- {{ app.employee_email }} || Employee name:- {{ app.employee_name }}</li>
         {% endfor %}
     </ul>
+    <!-- <a href="{{ url_for('download_aproved_employees_excel') }}"> -->
+    <!-- <button type="button">Download Employee List (Excel)</button>
+</a> -->
+    <a href="{{ url_for('download_aproved_employees_excel') }}">
+    <img src="{{ url_for('static', filename='images/d_b.png') }}" alt="Download Excel">
+    </a>
 </body>
 </html>

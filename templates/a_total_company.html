@@ -6,15 +6,24 @@
     <title>All company</title>
 </head>
 <body>
+    <a href="/admin_dashboard"><button>Go back</button></a>
+<form method="get" action="/2300/admin_dashboard/companyes" class="search-box">
+    <input type="text" name="q" placeholder="Search by name, email, or status"
+            value="{{ search_query or '' }}">
+    <button type="submit">Search</button>
+    {% if search_query %}
+        <a href="/2300/admin_dashboard/companyes"><button type="button">Clear</button></a>
+    {% endif %}
+</form>
         {% for company in companyes %}
     <p>----------    $$    ----------</p>
         <p>.Company name:- {{ company.name}}</p>
         <p> Email:- {{ company.email }}</p>
         <p> Contact Number:- {{ company.mobile }}</p>
         <p>.company gst no.:- {{ company.gst }}</p>
-        <p>.company registration date :- {{ company.company_registration_date}}</p>
         <p>.company registration date on portal:- {{ company.registration_date}}</p>
         <p>company Status:- {{ company.status }}</p>
+        <a href="{{ url_for('a_view_c_details', cmp_id=company.id) }}"><button>View Details</button></a>
         <form method="POST" action="{{ url_for('a_b_unb_company') }}">
         <input type="hidden" name="company_id" value="{{ company.id }}">
         <button onclick="return confirm('Are you sure you want to Block this company')" name="action" value="Block">Block</button>

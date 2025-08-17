@@ -1,0 +1,75 @@
+/* General Styling */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #007BFF, #00A8FF);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+}
+
+/* Title */
+.title {
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+    font-weight: bold;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Card Section */
+.card {
+    background: white;
+    color: #007BFF;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Card Title */
+.card h2 {
+    margin-bottom: 15px;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 18px;
+    margin: 5px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background-color: white;
+    color: #007BFF;
+    border: 2px solid #007BFF;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .title {
+        font-size: 1.8rem;
+    }
+    .btn {
+        padding: 8px 14px;
+    }
+}

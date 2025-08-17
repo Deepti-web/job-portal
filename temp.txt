@@ -25,3 +25,10 @@
 
 
 , job_id=job.id, job_title=job.title,comp_id=job.company_id )
+
+
+
+
+
+            <!-- <a href="{{ url_for('view_posted_job_detais', job_id=job.id) }}"><button>View details</button></a>
+            <a href="{{ url_for('view_job's_application', job_id=job.id) }}"><button>View applications</button></a> -->

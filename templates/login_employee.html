@@ -1,17 +1,59 @@
 <!DOCTYPE html>
-<html>
-<head><title>Employee Login</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employee_login.css') }}">
+</head>
 <body>
-    <h2>Employee Login</h2>
-    <form method="post">
-        Email: <input type="email" name="email" required><br><br>
-        Password: <input type="text" name="password" required><br><br>
-        <input type="submit" value="Login">
-    </form><br><br>
-    <a href="/forgate_password_email_e">Forgate Password</a>
-    <p>{% with messages = get_flashed_messages() %}{% if messages %}{{ messages[0] }}{% endif %}{% endwith %}</p>
-    {% if error %}
-    <p>{{ error }}</p>
-    {% endif %}
+    <div class="login-container">
+        <h2>Employee Login</h2>
+
+        <form method="post" class="login-form">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Enter your email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter your password" id="password" required>
+            
+            <label class="show-pass">
+            <input type="checkbox" id="showPassword">
+            Show Password
+            </label><br><br>
+
+            <label>Captcha</label>
+            <div class="captcha-box">
+                <img src="../static/captcha/captcha_e.png" alt="Captcha">
+                <input type="text" name="captcha" placeholder="Enter Captcha" required>
+            </div>
+
+            <input type="submit" value="Login" class="btn">
+        </form>
+
+        <a href="/forgate_password_email_e" class="forgot-link">Forgot Password?</a>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <p class="error">{{ messages[0] }}</p>
+            {% endif %}
+        {% endwith %}
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+
+<script>
+    window.onload = function () {
+        const showPasswordCheckbox = document.getElementById("showPassword");
+        const passField = document.getElementById("password");
+
+        showPasswordCheckbox.addEventListener("change", function () {
+            passField.type = this.checked ? "text" : "password";
+        });
+    };
+</script>
+
 </body>
 </html>

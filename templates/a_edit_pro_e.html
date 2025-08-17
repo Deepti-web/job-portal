@@ -6,6 +6,7 @@
     <title>edit profile eployee by admin</title>
 </head>
 <body>
+    <a href="/admin_dashboard"><button>Go back</button></a>
     {% for photo in photos %}
         <img src="data:image/jpeg;base64,{{ photo.image_data }}"
         class="thumbnail"

@@ -3,36 +3,83 @@
 <head>
     <title>Upload Profile Photo</title>
     <style>
-    .profile-box {
-        width: 200px;
-        height: 200px;
-        border: 2px solid #ccc;
-        border-radius: 10px;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .profile-box img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: cover;
-    }
-</style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
 
+        .container {
+            max-width: 450px;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 15px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fafafa;
+            width: 80%;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        a.back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #555;
+            font-size: 14px;
+        }
+
+        a.back-btn:hover {
+            color: #000;
+        }
+    </style>
 </head>
 <body>
-    <h2>Upload Your Profile Photo</h2>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="photo" accept=".pdf, .jpg, .jpeg, .png" required>
-        <button type="submit">Upload</button>
-    </form>
-{% for photo in photos %}
-    <div class="profile-box">
-        <img src="data:image/jpeg;base64,{{ photo.image_data }}" alt="Profile Logo">
+    <div class="container">
+        <h2>Upload Your Profile Photo</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="photo" accept=".jpg, .jpeg, .png" required>
+            <button type="submit">Upload</button>
+        </form>
+        <p class="note">Allowed formats: JPG, JPEG, PNG. Max size: 5MB</p>
+        <a href="/edit_profile_e" class="back-btn">⬅ Back to Edit Profile</a>
     </div>
-{% endfor %}
 </body>
 </html>

@@ -1,26 +1,39 @@
 <!DOCTYPE html>
-<html>
-<head><title>Employee Dashboard</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employee_dashboard.css') }}">
+</head>
 <body>
-    <h2>Welcome, {{ session['employee_name'] }}</h2>
-    <a href="/dashboard_employee/profile"><button>Profile</button></a>
 
-    <h3>Available Job Openings</h3>
-    <ul>
-        {% for job in jobs %}
-            <li>
-                <strong>{{ job.title }}</strong> <span>({{ job.job_type }})</span><br>
-                <p>company - <span>{{ job.company_name }} </span></p>
-                <p>location - <span> {{ job.country }},{{ job.state }},{{ job.city }}</span></p>
-                <p><span> {{ job.salary }}</span></p>
-                <a href="{{ url_for('details', job_id=job.id, comp_id=job.company_id ) }}">
-                    <button type="button">view details and apply</button>
-                </a>
-            </li><br>
-        {% endfor %}
-    </ul>
-    <a href="/status"><button>Application status</button></a>
-    <a href="/logout"><button>Logout</button></a>
+    <!-- Navbar -->
+    <div class="navbar">
+        <h2>Welcome</h2>
+        <div class="nav-links">
+            <a href="/dashboard_employee/profile">Profile</a>
+            <a href="/job_search">Search Job</a>
+            <a href="/status">Application Status</a>
+            <a href="/logout" class="logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- Job Listings -->
+    <div class="container">
+        <h3>Available Job Openings</h3>
+        <div class="jobs-grid">
+            {% for job in jobs %}
+            <div class="job-card">
+                <h4>{{ job.title }} <span class="type">({{ job.job_type }})</span></h4>
+                <p><strong>Company:</strong> {{ job.company_name }}</p>
+                <p><strong>Location:</strong> {{ job.location }}</p>
+                <p><strong>Salary:</strong> {{ job.salary }}</p>
+                <a href="{{ url_for('details', job_id=job.id, comp_id=job.company_id ) }}" class="btn">View Details & Apply</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
 </body>
 </html>

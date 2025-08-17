@@ -3,17 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>change password</title>
+    <title>Forgot Password</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        input[type="email"], input[type="text"] {
+            width: 94%;
+            padding: 12px;
+            margin-bottom: 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        button {
+            padding: 10px 18px;
+            margin: 5px;
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s ease-in;
+        }
+
+        button:hover {
+            background: #0284c7;
+        }
+
+        .alert {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
 </head>
 <body>
     <form method="post" action="/forgate_password_email_e">
-        <input type="email" name="email" placeholder="enter the adress" value="{{ request.form.get('email', '') }}" required>
-        <button name="action" value="send">Send otp</button>
-        <input type="text" name="otp" placeholder="enter the otp" value="{{ request.form.get('otp', '') }}">
+        <h2>Forgot Password</h2>
+        <input type="email" name="email" placeholder="Enter your email address" value="{{ request.form.get('email', '') }}" required>
+        <button name="action" value="send">Send OTP</button>
+
+        <input type="text" name="otp" placeholder="Enter OTP" value="{{ request.form.get('otp', '') }}">
         <button name="action" value="verify">Verify</button>
+
+        {% for category, msg in get_flashed_messages(with_categories=true) %}
+            <div class="alert alert-{{ category }}">{{ msg }}</div>
+        {% endfor %}
     </form>
-{% for category, msg in get_flashed_messages(with_categories=true) %}
-    <div class="alert alert-{{ category }}">{{ msg }}</div>
-{% endfor %}
 </body>
 </html>
