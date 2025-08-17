@@ -429,7 +429,7 @@ def forgate_password_c():
             else:
                 flash("Incorrect otp")
                 # error = "Incorrect OTP"
-    return render_template("verify_otp_c&e_in prof.html")
+    return render_template("verify_otp_c_and_e_in_prof.html")
 
 
 @app.route("/new_password_c", methods=["GET", "POST"])
@@ -787,7 +787,7 @@ def forgate_password():
             else:
                 flash("Incorrect OTP")
 
-    return render_template("verify_otp_c&e_in prof.html")
+    return render_template("verify_otp_c_and_e_in_prof.html")
 
 
 
