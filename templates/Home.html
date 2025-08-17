@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='css/Home.css') }}"> -->
+    <link rel="stylesheet" href="Home.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Job-Pilot</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"href="#">Policy</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/auth">Sign-up</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Contact us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">About us</a>
+        </li>
+      </ul>
+      
+    </div>
+    <form class="d-flex" role="search" action="{{ url_for('auth') }}" method="get">
+    <input class="form-control me-3 w-100" type="search" placeholder="Search the job " aria-label="Search" style="width: 10rem;"/>
+    <button class="btn btn-outline-primary" type="submit">Search</button>
+      </form>
+  </div>
+  
+</nav>
+    <!-- main content -->
+      <div class="container">
+    <div class="main-section">
+      <div class="left-section">
+        <h1>Find a job that suits<br> your interest & skills.</h1>
+        <p class="subtitle">
+          Aliquam vitae turpis in diam convallis finibus in at risus. Nullam<br>
+          in scelerisque leo, eget sollicitudin velit vestibulum.
+        </p>
+        <form class="search-form" action="{{ url_for('auth') }}" method="get">
+          <input type="text" placeholder="Job title, Keyword...">
+          <input type="text" placeholder="Your Location">
+            <button class="find">Find Job</button>
+        </form>
+        <div class="suggestion">
+          Suggestion:
+          <span>Designer, Programing, Digital Marketing, Video, Animation.</span>
+        </div>
+      </div>
+      <div class="right-section">
+        <!-- Illustration Placeholder: Replace with your SVG or image as needed -->
+        <!--<img src="{{ url_for('static', filename='images/generated-image.png') }}" alt="Logo" class="illustration"> -->
+        <img src="generated-image.png" alt="logo" class="illustration">
+      </div>
+    </div>
+    <div class="stats-section">
+      <div class="stat-box">
+        <div class="icon"><span>&#128188;</span></div>
+        <div>
+          <span class="stat-number">1,75,324</span>
+          <div class="stat-label">Live Job</div>
+        </div>
+      </div>
+      <div class="stat-box">
+        <div class="icon"><span>&#128196;</span></div>
+        <div>
+          <span class="stat-number">97,054</span>
+          <div class="stat-label">Companies</div>
+        </div>
+      </div>
+      <!-- <--hello world--> 
+      <div class="stat-box">
+        <div class="icon"><span>&#128100;</span></div>
+        <div>
+          <span class="stat-number">38,47,154</span>
+          <div class="stat-label">Candidates</div>
+        </div>
+      </div>
+      <div class="stat-box">
+        <div class="icon"><span>&#128188;</span></div>
+        <div>
+          <span class="stat-number">7,532</span>
+          <div class="stat-label">New Jobs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <-- category section --> 
+   <div class="containerr">
+    <h2>Popular category</h2>
+    <div class="view-all-box">
+      <a href="#" class="view-all-btn">View All &rarr;</a>
+    </div>
+    <div class="categories">
+      <div class="category-card">
+        <span class="icon">&#128396;</span>
+        <div class="title">Graphics &amp; Design</div>
+        <div class="subtitle">357 Open position</div>
+      </div>
+      <div class="category-card">
+        <span class="icon">&#60;/&#62;</span>
+        <div class="title">Code &amp; Programing</div>
+        <div class="subtitle">312 Open position</div>
+      </div>
+      <div class="category-card">
+        <span class="icon">&#128227;</span>
+        <div class="title">Digital Marketing</div>
+        <div class="subtitle">297 Open position</div>
+      </div>
+      <div class="category-card">
+        <span class="icon">&#127909;</span>
+        <div class="title">Video &amp; Animation</div>
+        <div class="subtitle">247 Open position</div>
+      </div>
+      <div class="category-card">
+        <span class="icon">&#127925;</span>
+        <div class="title">Music &amp; Audio</div>
+        <div class="subtitle">204 Open position</div>
+      </div>
+      <div class="category-card">
+        <span class="icon">&#128202;</span>
+        <div class="title">Account &amp; Finance</div>
+        <div class="subtitle">167 Open position</div>
+      </div>
+      <div class="category-card">
+        <span class="icon">&#128138;</span>
+        <div class="title">Health &amp; Care</div>
+        <div class="subtitle">125 Open position</div>
+      </div>
+      <div class="category-card active">
+        <span class="icon">&#128187;</span>
+        <div class="title" style="color:#2671DF;">Data &amp; Science</div>
+        <div class="subtitle">57 Open position</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- feedback section -->
+   <div class="testimonial-section">
+    <h2>Clients Testimonial</h2>
+    <div style="position:relative;">
+      <button class="arrow-btn arrow-left">&#8592;</button>
+      <div class="testimonial-cards-wrap">
+        <div class="testimonial-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="testimonial-text">
+            "Ut ullamcorper hendrerit tempor. Aliquam in rutrum dui. Maecenas ac placerat metus, in faucibus est."
+          </div>
+          <div class="testimonial-author">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Robert Fox">
+            <div class="testimonial-author-details">
+              <span class="name">Robert Fox</span>
+              <span class="role">UI/UX Designer</span>
+            </div>
+          </div>
+          <span class="quote-icon">&#10077;&#10078;</span>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="testimonial-text">
+            "Mauris eget lorem odio. Mauris convallis justo molestie metus aliquam lacinia. Suspendisse ut dui vulputate augue condimentum ornare. Morbi vitae tristique ante"
+          </div>
+          <div class="testimonial-author">
+            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Bessie Cooper">
+            <div class="testimonial-author-details">
+              <span class="name">Bessie Cooper</span>
+              <span class="role">Creative Director</span>
+            </div>
+          </div>
+          <span class="quote-icon">&#10077;&#10078;</span>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="testimonial-text">
+            "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse et magna quis nibh accumsan venenatis sit amet id orci. Duis vestibulum bibendum dapibus."
+          </div>
+          <div class="testimonial-author">
+            <img src="https://randomuser.me/api/portraits/women/23.jpg" alt="Jane Cooper">
+            <div class="testimonial-author-details">
+              <span class="name">Jane Cooper</span>
+              <span class="role">Photographer</span>
+            </div>
+          </div>
+          <span class="quote-icon">&#10077;&#10078;</span>
+        </div>
+      </div>
+      <button class="arrow-btn arrow-right">&#8594;</button>
+    </div>
+    <div class="testimonial-dots">
+      <span class="testimonial-dot active"></span>
+      <span class="testimonial-dot"></span>
+      <span class="testimonial-dot"></span>
+      <span class="testimonial-dot"></span>
+    </div>
+  </div>
+
+  <!-- footer -->
+
+  <footer class="footer">
+    <div class="footer-main">
+      <div class="footer-col footer-col-logo">
+        <div class="footer-logo">
+          <span class="footer-logo-icon">&#128188;</span>
+          Jobpilot
+        </div>
+        <div class="footer-call">
+          Call now: <span class="footer-call-number">(319) 555-0115</span>
+        </div>
+        <div class="footer-address">
+          6391 Elgin St. Celina, Delaware 10299,<br>
+          New York, United States of America
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-title">Quick Link</div>
+        <div class="footer-links">
+          <a href="#">About</a>
+          <a href="#" class="active"><span class="arrow">&#8594;</span> Contact</a>
+          <a href="#">Pricing</a>
+          <a href="#">Blog</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-title">Candidate</div>
+        <div class="footer-links">
+          <a href="#">Browse Jobs</a>
+          <a href="#">Browse Employers</a>
+          <a href="#">Candidate Dashboard</a>
+          <a href="#">Saved Jobs</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-title">Employers</div>
+        <div class="footer-links">
+          <a href="#">Post a Job</a>
+          <a href="#">Browse Candidates</a>
+          <a href="#">Employers Dashboard</a>
+          <a href="#">Applications</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-title">Support</div>
+        <div class="footer-links">
+          <a href="#">Faqs</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms &amp; Conditions</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-row">
+        <div class="footer-copy">
+          &copy; 2025 Jobpilot - Job Portal. All rights reserved
+        </div>
+        <div class="footer-social">
+          <span>&#xf09a;</span> <!-- Facebook -->
+          <span>&#xf16d;</span> <!-- Instagram -->
+          <span>&#xf099;</span> <!-- Twitter -->
+          <span>&#xf0e1;</span> <!-- LinkedIn -->
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+</body>
+</html>
