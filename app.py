@@ -22,7 +22,7 @@ app.secret_key = "jobportal123"
 
 def send_email(subject, body, receiver_email):
     sender_email = "deeptilapy@gmail.com"
-    sender_password = "ahbgohmjihgytmsm"
+    sender_password = "ahbgohmjihgytmsmdeepti"
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = receiver_email
