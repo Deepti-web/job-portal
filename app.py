@@ -22,7 +22,7 @@ app.secret_key = "jobportal123"
 
 def send_email(subject, body, receiver_email):
     sender_email = "job_portal2134@gmail.com"
-    sender_password = "hbgohmjihgytmsmdeepti web ser"
+    sender_password = "hbgohm web ser"
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = receiver_email
